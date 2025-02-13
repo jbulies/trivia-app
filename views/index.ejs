@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplicación Web Interactiva de Trivia</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <div class="header">
+        <div class="logo">
+            <img src="/img/logo_bmc_gw.png" alt="Logo">
+        </div>
+        <div class="title">
+            <h2>Aplicación Web Interactiva de Trivia</h2>
+        </div>
+    </div>
+    <div id="container" class="container">
+        <div id="main" class="grid"></div>
+        <div id="questionPage" class="question-page" style="display:none;">
+            <img id="questionImage" src="" alt="Imagen de la pregunta" style="display:none;">
+            <div id="questionText"></div>
+            <div id="timer">Tiempo restante: <span id="timeLeft">60</span> segundos</div>
+            <div id="options">
+                <button id="showAnswer">Ver Respuesta</button>
+                <button onclick="goBack()">Atrás</button>
+            </div>
+            <div id="answerText" style="display:none;"></div>
+            <audio id="timeUpSound" src="/sounds/bleep-03.mp3"></audio>
+        </div>
+    </div>
+    <div class="footer">
+        <p>Brigada Médica Cubana en Guinea Bissau</p>
+        <p>Facultad de Medicina Cubano-Guineense “Raúl Díaz Argüelles García”</p>
+    </div>
+    <script src="/js/script.js"></script>
+</body>
+</html>

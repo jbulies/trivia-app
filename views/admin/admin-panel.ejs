@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="admin-header">
+        <h2>Panel de Administración</h2>
+        <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+    </header>
+    
+    <main class="admin-container">
+        <section id="messageBox" class="message-box hidden">
+            <span id="messageText"></span>
+        </section>
+        
+        <section id="addQuestionForm" class="form-container">
+            <h3>Añadir Pregunta</h3>
+            <form action="/admin/admin-panel" method="POST" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="question">Pregunta:</label>
+                    <textarea id="question" name="question" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="image">Imagen (opcional):</label>
+                    <input type="file" id="image" name="image" accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label for="answer">Respuesta:</label>
+                    <textarea id="answer" name="answer" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="group_id">Grupo:</label>
+                    <select id="group_id" name="group_id" required>
+                        <option value="1">Grupo 1 (Amarillo)</option>
+                        <option value="2">Grupo 2 (Rojo)</option>
+                        <option value="3">Grupo 3 (Azul)</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Añadir Pregunta</button>
+            </form>
+        </section>
+
+        <section class="admin-actions">
+            <h3>Acciones de Administración</h3>
+            <button id="reorderQuestions">Reordenar Preguntas Aleatoriamente</button>
+            <p>
+                Este botón reorganiza las preguntas dentro de cada grupo de manera aleatoria, asegurando que:
+            </p>
+            <ul>
+                <li>Las preguntas <strong>nunca cambien de grupo</strong>.</li>
+                <li>Los números de las preguntas queden en <strong>orden descendente</strong> (1, 2, 3, ..., 36).</li>
+                <li>La base de datos se actualice con el nuevo orden.</li>
+            </ul>
+            <p>
+                <strong>Nota:</strong> Esta acción no puede deshacerse.
+            </p>
+        </section>
+        
+        <section class="table-container">
+            <h3>Lista de Preguntas</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Número</th>
+                        <th>Pregunta</th>
+                        <th>Respuesta</th>
+                        <th>Grupo</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% questions.forEach(question => { %>
+                    <tr>
+                        <td><%= question.number %></td>
+                        <td><%= question.question %></td>
+                        <td><%= question.answer %></td>
+                        <td><%= question.group_id %></td>
+                        <td>
+                            <button class="edit-button" data-id="<%= question.id %>">Editar</button>
+                            <button class="delete-button" data-id="<%= question.id %>">Eliminar</button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </section>
+    </main>
+    
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Editar Pregunta</h3>
+            <form id="editForm">
+                <input type="hidden" name="id" id="editId">
+                
+                <div class="form-group">
+                    <label for="editQuestion">Pregunta:</label>
+                    <textarea id="editQuestion" name="editQuestion" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editImage">Imagen (opcional):</label>
+                    <input type="file" id="editImage" name="editImage" accept="image/*">
+                </div>
+                
+                <div class="form-group">
+                    <label for="editAnswer">Respuesta:</label>
+                    <textarea id="editAnswer" name="editAnswer" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editGroupId">Grupo:</label>
+                    <select id="editGroupId" name="editGroupId" required>
+                        <option value="1">Grupo 1 (Amarillo)</option>
+                        <option value="2">Grupo 2 (Rojo)</option>
+                        <option value="3">Grupo 3 (Azul)</option>
+                    </select>
+                </div>
+                
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>
+    
+    <script src="/js/script.js"></script>
+</body>
+</html>

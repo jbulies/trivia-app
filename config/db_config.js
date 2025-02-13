@@ -1,24 +1,27 @@
 const mysql = require('mysql2');
 
-// Configuración de la conexión a la base de datos
+// Configuración del pool de conexiones
 const dbConfig = {
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'trivia_app'
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
+  password: process.env.DB_PASSWORD || '',
+  database: process.env.DB_NAME || 'trivia_app',
+  waitForConnections: true, // Esperar si no hay conexiones disponibles
+  connectionLimit: 10,      // Límite de conexiones en el pool
+  queueLimit: 0             // No limitar la cola de solicitudes
 };
 
-// Crear la conexión
-const db = mysql.createConnection(dbConfig);
+// Crear el pool de conexiones promisificado
+const pool = mysql.createPool(dbConfig).promise();
 
-// Conectar a la base de datos
-db.connect(err => {
-    if (err) {
-        console.error('Error al conectar a la base de datos:', err);
-        return;
-    }
-    console.log('Conexión exitosa a la base de datos.');
-});
+// Probar la conexión al iniciar la aplicación
+pool.query('SELECT 1')
+  .then(() => {
+    console.log('Conexión exitosa al pool de bases de datos.');
+  })
+  .catch((err) => {
+    console.error('Error al conectar al pool de bases de datos:', err);
+  });
 
-// Exportar la conexión para usarla en otras partes de la aplicación
-module.exports = db;
+// Exportar el pool promisificado
+module.exports = pool;

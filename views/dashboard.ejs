@@ -9,7 +9,10 @@
 <body>
     <header class="admin-header">
         <h2>Panel de Administración</h2>
-        <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        <div>
+            <button class="home-button" id="homeButton">Inicio</button>
+            <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        </div>
     </header>
     
     <main class="admin-container">
@@ -19,7 +22,7 @@
         
         <section id="addQuestionForm" class="form-container">
             <h3>Añadir Pregunta</h3>
-            <form action="/admin/admin-panel" method="POST" enctype="multipart/form-data">
+            <form action="/dashboard" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="question">Pregunta:</label>
                     <textarea id="question" name="question" required></textarea>

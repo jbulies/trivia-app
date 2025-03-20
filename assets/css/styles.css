@@ -28,7 +28,7 @@ body {
 
 .title h2 {
     margin: 0;
-    margin-right: 150px;
+    margin-right: 20px;
     font-size: 1.5rem;
 }
 
@@ -448,6 +448,10 @@ tr td:last-child {
         font-size: 1.2rem;
     }
 
+    .link h2 {
+        font-size: 1.2rem;
+    }
+
     .grid {
         grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
         gap: 5px;
@@ -456,6 +460,10 @@ tr td:last-child {
 
 @media (max-width: 480px) {
     .title h2 {
+        font-size: 1rem;
+    }
+
+    .link h2 {
         font-size: 1rem;
     }
 

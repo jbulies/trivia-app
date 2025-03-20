@@ -144,7 +144,7 @@ if (editModal && closeModal) {
         const formData = new FormData(e.target);
         const id = formData.get('id'); // Obtener el ID desde el formulario
 
-        fetch(`/admin/admin-panel/${id}`, {
+        fetch(`/dashboard/${id}`, {
             method: 'PUT',
             body: formData
         })
@@ -166,7 +166,7 @@ if (editModal && closeModal) {
         button.addEventListener('click', () => {
             const id = button.getAttribute('data-id');
             if (confirm('¿Estás seguro de que deseas eliminar esta pregunta?')) {
-                fetch(`/admin/admin-panel/${id}`, {
+                fetch(`/dashboard/${id}`, {
                     method: 'DELETE'
                 })
                 .then(response => response.json())
@@ -185,7 +185,7 @@ if (editModal && closeModal) {
 
         const formData = new FormData(e.target);
 
-        fetch('/admin/admin-panel', {
+        fetch('/dashboard', {
             method: 'POST',
             body: formData
         })
@@ -227,7 +227,7 @@ const reorderButton = document.getElementById('reorderQuestions');
 if (reorderButton) {
     reorderButton.addEventListener('click', () => {
         if (confirm('¿Estás seguro de que deseas reordenar las preguntas aleatoriamente?')) {
-            fetch('/admin/reorder-questions', {
+            fetch('/reorder-questions', {
                 method: 'POST'
             })
             .then(response => response.json())
@@ -247,16 +247,24 @@ if (reorderButton) {
     });
 }
 
+// Lógica para el botón de inicio
+const homeButton = document.getElementById('homeButton');
+if (homeButton) {
+    homeButton.addEventListener('click', () => {
+        window.location.href = '/';
+    });
+}
+
 // Lógica para el botón de cierre de sesión
 const logoutButton = document.getElementById('logoutButton');
 if (logoutButton) {
     logoutButton.addEventListener('click', () => {
-        fetch('/admin/logout', {
+        fetch('/logout', {
             method: 'POST'
         })
         .then(response => {
             if (response.ok) {
-                window.location.href = '/admin';
+                window.location.href = '/login';
             } else {
                 alert('Error al cerrar sesión');
             }

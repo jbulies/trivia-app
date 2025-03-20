@@ -7,6 +7,7 @@ const path = require('path');
 const app = express();
 const pool = require('./config/db_config'); // Importar el pool promisificado
 const MySQLSessionStore = require('./config/mysqlSessionStore');
+const fs = require('fs');
 
 const port = process.env.PORT || 3000;
 
@@ -32,7 +33,7 @@ const upload = multer({ storage: storage });
 // Configurar express-session para usar MySQLSessionStore
 app.use(session({
     key: 'trivia_app', // Nombre de la cookie de sesión
-    secret: process.env.SKEY || 'secret_key', // Cambia esto por un secreto seguro
+    secret: process.env.SESSION_SECRET || 'secret_key', // Cambia esto por un secreto seguro
     store: sessionStore.store, // Usa el almacenamiento en MySQL
     resave: false,
     saveUninitialized: false,
@@ -48,17 +49,17 @@ const isAuthenticated = (req, res, next) => {
   if (req.session && req.session.authenticated) {
     return next();
   } else {
-    return res.redirect('/admin');
+    return res.redirect('/login');
   }
 };
 
 // Rutas
 
 // Obtener todas las preguntas
-app.get('/', async (req, res) => {
+app.get('/', isAuthenticated, async (req, res) => {
     try {
         const [results] = await pool.query('SELECT * FROM questions ORDER BY id');
-        res.render('index', { questions: results });
+        res.render('index', { questions: results, baseUrl: process.env.URL });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Error interno del servidor.' });
@@ -92,32 +93,32 @@ app.get('/question/:id', async (req, res) => {
 });
 
 // Página de inicio de sesión administrador
-app.get('/admin', (req, res) => {
-    res.render('admin/login');
+app.get('/login', (req, res) => {
+    res.render('login');
 });
 
 // Inicio de sesión administrador
-app.post('/admin/login', (req, res) => {
+app.post('/login', (req, res) => {
     const { password } = req.body;
     if (password === process.env.ADMIN_PASSWORD) {
         req.session.authenticated = true;
-        return res.redirect('/admin/admin-panel');
+        return res.redirect('/');
     } else {
-        return res.redirect('/admin');
+        return res.redirect('/login');
     }
 });
 
 // Cierre de sesión administrador
-app.post('/admin/logout', (req, res) => {
+app.post('/logout', (req, res) => {
     req.session.authenticated = false;
     res.status(200).send();
 });
 
 // Panel de administrador
-app.get('/admin/admin-panel', isAuthenticated, async (req, res) => {
+app.get('/dashboard', isAuthenticated, async (req, res) => {
     try {
         const [results] = await pool.query('SELECT * FROM questions ORDER BY number');
-        res.render('admin/admin-panel', { questions: results });
+        res.render('dashboard', { questions: results });
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Error interno del servidor.' });
@@ -125,7 +126,7 @@ app.get('/admin/admin-panel', isAuthenticated, async (req, res) => {
 });
 
 // Agregar nueva pregunta
-app.post('/admin/admin-panel', upload.single('image'), async (req, res) => {
+app.post('/dashboard', upload.single('image'), async (req, res) => {
     const { question, answer, group_id } = req.body;
     const image = req.file ? req.file.filename : null;
 
@@ -176,7 +177,7 @@ app.post('/admin/admin-panel', upload.single('image'), async (req, res) => {
 });
 
 // Reordenar preguntas
-app.post('/admin/reorder-questions', isAuthenticated, async (req, res) => {
+app.post('/reorder-questions', isAuthenticated, async (req, res) => {
     try {
         const [results] = await pool.query('SELECT id, number, group_id, question, answer, image FROM questions ORDER BY group_id, id');
 
@@ -233,20 +234,27 @@ function shuffleArray(array) {
 }
 
 // Actualizar pregunta existente
-app.put('/admin/admin-panel/:id', upload.single('editImage'), async (req, res) => {
+app.put('/dashboard/:id', upload.single('editImage'), async (req, res) => {
     const id = req.params.id;
     const { editQuestion, editAnswer, editGroupId } = req.body;
-    const image = req.file ? req.file.filename : null;
+    const newImage = req.file ? req.file.filename : null;
 
     try {
+        // 1. Buscar la pregunta actual en la base de datos
         const [[question]] = await pool.query('SELECT * FROM questions WHERE id = ?', [id]);
+
         if (!question) {
             return res.status(404).json({ success: false, message: 'Pregunta no encontrada.' });
         }
 
-        await pool.query('UPDATE questions SET question = ?, image = ?, answer = ?, group_id = ? WHERE id = ?', [
-            editQuestion, image, editAnswer, editGroupId, id
-        ]);
+        // 2. Si no se subió una nueva imagen, mantener la que ya existía
+        const imageToUpdate = newImage ? newImage : question.image;
+
+        // 3. Actualizar la pregunta
+        await pool.query(
+            'UPDATE questions SET question = ?, image = ?, answer = ?, group_id = ? WHERE id = ?',
+            [editQuestion, imageToUpdate, editAnswer, editGroupId, id]
+        );
 
         return res.json({ success: true, message: 'Pregunta actualizada con éxito.' });
     } catch (err) {
@@ -256,7 +264,7 @@ app.put('/admin/admin-panel/:id', upload.single('editImage'), async (req, res) =
 });
 
 // Eliminar pregunta
-app.delete('/admin/admin-panel/:id', async (req, res) => {
+app.delete('/dashboard/:id', async (req, res) => {
     const id = req.params.id;
 
     try {
@@ -265,8 +273,30 @@ app.delete('/admin/admin-panel/:id', async (req, res) => {
             return res.status(404).json({ success: false, message: 'Pregunta no encontrada.' });
         }
 
+        // 2. Si tiene imagen, eliminar el archivo físico
+        if (question.image) {
+            const imagePath = path.join(__dirname, 'assets/img', question.image);
+
+            // Verifica si el archivo existe antes de intentar eliminarlo
+            fs.access(imagePath, fs.constants.F_OK, (err) => {
+                if (!err) {
+                    fs.unlink(imagePath, (err) => {
+                        if (err) {
+                            console.error('Error eliminando la imagen:', err);
+                        } else {
+                            console.log('Imagen eliminada:', question.image);
+                        }
+                    });
+                } else {
+                    console.warn('La imagen no existe en el disco:', question.image);
+                }
+            });
+        }
+
+        // 3. Eliminar la pregunta de la base de datos
         await pool.query('DELETE FROM questions WHERE id = ?', [id]);
-        return res.json({ success: true, message: 'Pregunta eliminada con éxito.' });
+
+        return res.json({ success: true, message: 'Pregunta e imagen eliminadas con éxito.' });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ success: false, message: 'Error interno del servidor.' });

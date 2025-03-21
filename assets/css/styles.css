@@ -49,6 +49,7 @@ body {
     gap: 10px;
     width: 100%;
     max-width: 600px;
+    place-items: center;
     margin: 0 auto;
 }
 
@@ -439,6 +440,7 @@ tr td:last-child {
     }
 
     .title h2 {
+        margin-top: 10px;
         margin-right: unset;
         font-size: 1.2rem;
     }

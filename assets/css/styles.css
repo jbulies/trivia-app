@@ -70,11 +70,6 @@ body {
     transform: scale(1.05);
 }
 
-.yellow { background-color: yellow; }
-.red { background-color: red; }
-.blue { background-color: blue; }
-.green { background-color: green; }
-
 /* Página de preguntas */
 .question-page {
     width: 90%;
@@ -453,8 +448,8 @@ tr td:last-child {
     }
 
     .grid {
-        grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
-        gap: 5px;
+        grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+        gap: 10px;
     }
 }
 

@@ -30,9 +30,9 @@ if (mainDiv && questionPage) {
     }
 
     function getColor(index) {
-        if (index <= 11) return 'yellow';
-        if (index <= 23) return 'red';
-        return 'blue';
+        if (index <= 11) return '#FFEB3B';
+        if (index <= 23) return '#F44336';
+        return '#2196F3';
     }
 
     function showQuestion(id) {
@@ -102,7 +102,7 @@ if (mainDiv && questionPage) {
     
         if (selectedButton) {
             // Cambiar el color del botón seleccionado a verde
-            selectedButton.style.backgroundColor = 'green';
+            selectedButton.style.backgroundColor = '#4CAF50';
         }
     }
 

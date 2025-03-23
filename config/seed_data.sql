@@ -1,44 +1,44 @@
--- Grupo 1 (Números 1-12) - Preguntas para 1ro y 2do año
-INSERT INTO questions (number, question, image, answer, group_id) VALUES 
-(1, '¿Cuál es el nombre del tejido que recubre la superficie del cuerpo?', NULL, 'Epitelial', 1),
-(2, '¿Qué órgano es responsable de bombear la sangre en el cuerpo?', NULL, 'Corazón', 1),
-(3, '¿Cuál es el hueso más largo del cuerpo humano?', NULL, 'Fémur', 1),
-(4, '¿Qué estructura del ojo permite el paso de la luz?', NULL, 'Pupila', 1),
-(5, '¿Cómo se llama el pigmento que da color a la piel?', NULL, 'Melanina', 1),
-(6, '¿Qué tipo de células transportan oxígeno en la sangre?', NULL, 'Glóbulos rojos', 1),
-(7, '¿En qué órgano se produce la insulina?', NULL, 'Páncreas', 1),
-(8, '¿Cuál es el pH normal de la sangre humana?', NULL, '7.35 - 7.45', 1),
-(9, '¿Cuál es la unidad funcional del riñón?', NULL, 'Nefrona', 1),
-(10, '¿Cómo se llama la membrana que recubre los pulmones?', NULL, 'Pleura', 1),
-(11, '¿Qué tipo de tejido conecta los músculos con los huesos?', NULL, 'Tendón', 1),
-(12, '¿Cuál es el nombre de la válvula que separa la aurícula izquierda del ventrículo izquierdo?', NULL, 'Mitral', 1);
+-- Grupo 1 (Números 1-12)
+INSERT INTO questions (number, question, image, answer, group_id, user_id) VALUES 
+(1, '¿Qué diferencia existe entre metodología, método y técnica en la investigación científica?', NULL, 'La metodología es el marco teórico y estratégico que orienta el estudio; el método es el proceso sistemático para alcanzar objetivos; y la técnica es la herramienta práctica para recolectar y analizar datos.', 1, 1),
+(2, 'Explica la importancia de definir claramente el problema de investigación.', NULL, 'Una definición precisa delimita el alcance del estudio, orienta la formulación de objetivos e hipótesis y asegura la relevancia y factibilidad de la investigación.', 1, 1),
+(3, 'Mencione dos ejemplos de métodos específicos derivados del método científico en distintas disciplinas.', NULL, 'El método clínico en medicina y el método epidemiológico en salud pública.', 1, 1),
+(4, 'Explica la función de los enfoques cuantitativo y cualitativo en un estudio de investigación.', NULL, 'El cuantitativo permite medir variables numéricamente, mientras que el cualitativo explora significados y contextos; ambos enfoques aportan perspectivas complementarias.', 1, 1),
+(5, 'Defina el método clínico y mencione un ejemplo de su aplicación.', NULL, 'El método clínico es el proceso de diagnóstico y tratamiento basado en la observación del paciente; por ejemplo, se utiliza para evaluar síntomas en medicina interna.', 1, 1),
+(6, '¿Qué se entiende por investigación científica?', NULL, 'Es el proceso sistemático de indagación que busca generar conocimiento mediante la observación, experimentación y análisis crítico.', 1, 1),
+(7, '¿Qué es el método científico?', NULL, 'Es un proceso estructurado que incluye la observación, formulación de hipótesis, experimentación, análisis y conclusión para validar teorías.', 1, 1),
+(8, '¿Cuáles son las etapas del método científico?', NULL, 'Planteamiento del problema, formulación de hipótesis, Contrastación de hipótesis, Generalización del nuevo conocimiento.', 1, 1),
+(9, 'Enumere dos requisitos que debe cumplir un problema de científico.', NULL, 'Objetividad, especificidad, contrastabilidad empírica, debe estar formulado en forma de pregunta.', 1, 1),
+(10, 'Defina qué es un instrumento de recolección de datos y mencione dos ejemplos.', NULL, 'Es una herramienta para obtener información; por ejemplo, un cuestionario y una entrevista.', 1, 1),
+(11, 'Mencione las tres clasificaciones principales de variables según las relaciones establecidas en el estudio.', NULL, 'Independientes, dependientes y de confusión.', 1, 1),
+(12, '¿En qué se diferencian un proyecto de investigación y un informe de investigación, y cuál es la relevancia de cada uno?', NULL, 'El proyecto de investigación es el plan preliminar que define el problema, objetivos, metodología y recursos, orientando la ejecución del estudio; el informe de investigación, por su parte, es el documento final que presenta, analiza y difunde los resultados obtenidos, contribuyendo al avance del conocimiento.', 1, 1);
 
--- Grupo 2 (Números 13-24) - Preguntas para 3ro y 4to año
-INSERT INTO questions (number, question, image, answer, group_id) VALUES 
-(13, '¿Cuál es el principal neurotransmisor excitador del sistema nervioso central?', NULL, 'Glutamato', 2),
-(14, '¿Qué nombre recibe la inflamación del hígado?', NULL, 'Hepatitis', 2),
-(15, '¿Qué tipo de inmunoglobulina es predominante en las reacciones alérgicas?', NULL, 'IgE', 2),
-(16, '¿Cuál es el mecanismo de acción de los beta bloqueadores?', NULL, 'Bloqueo de receptores beta-adrenérgicos', 2),
-(17, '¿Qué microorganismo es la causa más común de neumonía adquirida en la comunidad?', NULL, 'Streptococcus pneumoniae', 2),
-(18, '¿Qué parámetro mide la función renal en un examen de laboratorio?', NULL, 'Creatinina sérica', 2),
-(19, '¿Cuál es el principal ion extracelular?', NULL, 'Sodio', 2),
-(20, '¿Qué tipo de shock se produce por una reacción alérgica grave?', NULL, 'Anafiláctico', 2),
-(21, '¿Cuál es el nervio craneal encargado de la audición y el equilibrio?', NULL, 'Vestibulococlear (VIII)', 2),
-(22, '¿Qué estructura del corazón genera el impulso eléctrico?', NULL, 'Nodo sinoauricular', 2),
-(23, '¿Cuál es el signo clínico más característico de la apendicitis?', NULL, 'Dolor en fosa ilíaca derecha', 2),
-(24, '¿Qué hormona regula la producción de glóbulos rojos?', NULL, 'Eritropoyetina', 2);
+-- Grupo 2 (Números 13-24)
+INSERT INTO questions (number, question, image, answer, group_id, user_id) VALUES 
+(13, 'Reflexiona sobre la importancia de la ética en la investigación científica y su impacto en los resultados.', NULL, 'La ética protege los derechos de los participantes, asegura la integridad de los datos y fortalece la credibilidad del estudio, evitando sesgos y prácticas indebidas.', 2, 1),
+(14, 'Defina el método estadístico y mencione su función principal en la investigación.', NULL, 'El método estadístico utiliza técnicas matemáticas para analizar datos y extraer conclusiones basadas en evidencia objetiva.', 2, 1),
+(15, '¿Qué ventajas ofrece la investigación cuantitativa en comparación con la cualitativa en ciertos contextos?', NULL, 'La investigación cuantitativa proporciona resultados medibles y generalizables, ideales para estudios que requieren precisión y análisis de grandes muestras.', 2, 1),
+(16, 'Analiza cómo se integra el método clínico en investigaciones orientadas a la salud.', NULL, 'El método clínico se fundamenta en la observación, diagnóstico y tratamiento, ofreciendo un enfoque sistemático para mejorar la práctica médica.', 2, 1),
+(17, 'Explica la utilidad del método epidemiológico para estudiar enfermedades en poblaciones.', NULL, 'El método epidemiológico analiza la distribución y determinantes de enfermedades, facilitando la identificación de riesgos y la implementación de estrategias preventivas.', 2, 1),
+(18, 'Describe la importancia del perfil del proyecto de investigación en la planificación de un estudio.', NULL, 'El perfil del proyecto define objetivos, metodología y recursos, proporcionando una visión clara sobre la relevancia, factibilidad y potencial impacto de tu investigación.', 2, 1),
+(19, '¿Qué diferencia hay entre un estudio transversal y uno longitudinal?', NULL, 'Un estudio transversal recoge datos en un solo punto en el tiempo, proporcionando una "instantánea" de la situación, mientras que un estudio longitudinal recopila datos en diversos momentos para analizar cambios y tendencias.', 2, 1),
+(20, 'Mencione un error frecuente en la formulación de objetivos y su consecuencia.', NULL, 'Confundir los objetivos con el método o incluir un procedimiento como parte del objetivo. Confundir los objetivos con acciones asistenciales. Confundir los objetivos con los beneficios esperados.', 2, 1),
+(21, 'Defina hipótesis en investigación y mencione dos características que debe tener.', NULL, 'Es una afirmación provisional sobre la relación entre variables; debe ser comprobable y clara.', 2, 1),
+(22, 'Defina la investigación cuantitativa y mencione una de sus principales ventajas.', NULL, 'Se basa en datos numéricos y análisis estadístico, lo que permite la generalización de resultados a poblaciones mayores.', 2, 1),
+(23, 'Mencione dos partes fundamentales que integran un proyecto de investigación.', NULL, 'Planteamiento del problema, marco teórico, objetivos, metodología, etc.', 2, 1),
+(24, 'Explique la función de las referencias bibliográficas en una investigación.', NULL, 'Respaldan la información, permiten verificar fuentes y contextualizan el estudio dentro del marco académico.', 2, 1);
 
--- Grupo 3 (Números 25-36) - Preguntas para 5to y 6to año
-INSERT INTO questions (number, question, image, answer, group_id) VALUES 
-(25, '¿Cuál es el mecanismo de acción de los inhibidores de la ECA?', NULL, 'Inhibición de la conversión de angiotensina I en angiotensina II', 3),
-(26, '¿Qué escala se utiliza para evaluar el estado de conciencia de un paciente?', NULL, 'Escala de Glasgow', 3),
-(27, '¿Cuál es la principal causa de infarto agudo de miocardio?', NULL, 'Aterosclerosis', 3),
-(28, '¿Qué clasificación se utiliza para evaluar la insuficiencia cardíaca?', NULL, 'Clasificación de la NYHA', 3),
-(29, '¿Qué fármaco se usa como tratamiento de primera línea en la tuberculosis?', NULL, 'Isoniazida', 3),
-(30, '¿Cuál es el marcador tumoral más utilizado en el cáncer de próstata?', NULL, 'PSA (Antígeno Prostático Específico)', 3),
-(31, '¿Qué patógeno es la principal causa de úlcera gástrica?', NULL, 'Helicobacter pylori', 3),
-(32, '¿Cuál es el efecto adverso más grave de los AINEs?', NULL, 'Úlcera gástrica y sangrado digestivo', 3),
-(33, '¿Qué escala se usa para evaluar el riesgo de tromboembolismo en fibrilación auricular?', NULL, 'CHA2DS2-VASc', 3),
-(34, '¿Cuál es el tratamiento de elección para la sepsis grave?', NULL, 'Antibióticos de amplio espectro y resucitación con fluidos', 3),
-(35, '¿Cuál es el sitio anatómico más frecuente de fractura en pacientes con osteoporosis?', NULL, 'Cadera', 3),
-(36, '¿Qué antibiótico se utiliza como tratamiento empírico en meningitis bacteriana en adultos?', NULL, 'Ceftriaxona', 3);
+-- Grupo 3 (Números 25-36)
+INSERT INTO questions (number, question, image, answer, group_id, user_id) VALUES 
+(25, '¿Qué diferencias existen entre una hipótesis causal y una hipótesis correlacional?', NULL, 'La hipótesis causal establece que una variable influye directamente en otra, implicando una relación de causa y efecto; en cambio, la hipótesis correlacional solo indica que existe una relación estadística entre variables sin asumir que una cause la otra.', 3, 1),
+(26, 'Mencione dos consecuencias de formular una hipótesis de forma imprecisa.', NULL, 'Puede generar resultados ambiguos y dificultar la interpretación de los datos.', 3, 1),
+(27, 'Explica cómo la operacionalización de variables facilita la medición en una investigación.', NULL, 'La operacionalización traduce conceptos abstractos en indicadores medibles, permitiendo evaluar las variables de forma precisa y replicable.', 3, 1),
+(28, 'Defina qué es el problema científico y mencione uno de sus requisitos esenciales.', NULL, 'Es la interrogante que guía el estudio; debe ser relevante y estar bien delimitado.', 3, 1),
+(29, 'Analiza la interrelación entre problema, objetivos e hipótesis en la estructuración de un estudio.', NULL, 'El problema define la cuestión a investigar, los objetivos orientan el camino y la hipótesis propone una posible solución, conformando un trío esencial.', 3, 1),
+(30, '¿Es correcto afirmar que la variable dependiente es aquella que se manipula en un estudio experimental?', NULL, 'En un estudio experimental, la variable independiente es la que se manipula o controla para observar su efecto, mientras que la variable dependiente es la que se mide como resultado; por lo tanto, la afirmación es incorrecta.', 3, 1),
+(31, 'Mencione dos diferencias fundamentales entre la investigación cuantitativa y la cualitativa.', NULL, 'La cuantitativa utiliza datos numéricos y análisis estadístico; la cualitativa explora significados y contextos a través de datos descriptivos.', 3, 1),
+(32, 'Defina qué es una técnica en la investigación y dé un ejemplo.', NULL, 'Es un procedimiento específico para recolectar o analizar datos; por ejemplo, una entrevista semiestructurada.', 3, 1),
+(33, 'Mencione la clasificación de objetivos en una investigación.', NULL, 'Objetivos generales y objetivos específicos.', 3, 1),
+(34, 'Mencione una razón por la cual es importante actualizar la revisión bibliográfica en una investigación.', NULL, 'Permite incorporar avances recientes y mantener la relevancia del estudio.', 3, 1),
+(35, 'Defina qué es un perfil de proyecto de investigación y mencione su utilidad.', NULL, 'Es un resumen del plan investigativo; sirve para evaluar la viabilidad y orientar la ejecución del estudio.', 3, 1),
+(36, 'Mencione la estructura básica de un informe de investigación.', NULL, 'Introducción, metodología, resultados, discusión y conclusiones.', 3, 1);

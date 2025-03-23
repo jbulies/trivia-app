@@ -4,27 +4,29 @@ CREATE DATABASE IF NOT EXISTS trivia_app;
 -- Usar la base de datos recién creada
 USE trivia_app;
 
--- Crear la tabla users si no existe
+-- Crear la tabla users si no existe (con cambios si es necesario)
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
     first_name VARCHAR(255) NOT NULL,
     last_name VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN NOT NULL DEFAULT FALSE -- Columna para rol de administrador
+    is_admin BOOLEAN NOT NULL DEFAULT FALSE, -- Columna para rol de administrador
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Columna para fecha de creación
 );
 
--- Crear la tabla questions si no existe
+-- Crear la tabla questions si no existe (actualizada para asociar a cada usuario)
 CREATE TABLE IF NOT EXISTS questions (
     id INT AUTO_INCREMENT PRIMARY KEY,
     number INT NOT NULL,
     question TEXT NOT NULL,
-    image VARCHAR(255),
+    image VARCHAR(255), -- Ruta de la imagen asociada a la pregunta
     answer TEXT NOT NULL,
     group_id INT NOT NULL,
-    user_id INT NOT NULL,
-    UNIQUE (number, group_id),  -- Evitar duplicados de número por grupo
-    FOREIGN KEY (user_id) REFERENCES users(id) -- Relación con la tabla users
+    user_id INT NOT NULL, -- Relación con la tabla users para identificar el usuario propietario
+    UNIQUE (number, group_id, user_id),  -- Evitar duplicados de número por grupo por usuario
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE, -- Relación con la tabla users
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP -- Fecha de creación de la pregunta
 );
 
 -- Crear la tabla sessions si no existe
@@ -36,7 +38,7 @@ CREATE TABLE IF NOT EXISTS sessions (
 
 -- Crear índices adicionales para mejorar el rendimiento
 CREATE INDEX idx_group_id ON questions (group_id);
-CREATE INDEX idx_number ON questions (number);
+CREATE INDEX idx_number_user ON questions (number, user_id);
 
 -- Insertar un usuario por defecto (admin)
 -- Es necesario usar la función de hash adecuada según el SGBD que estés utilizando (ej. SHA2 para MySQL)

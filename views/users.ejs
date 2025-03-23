@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administración</title>
+    <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+    <header class="admin-header">
+        <h2>Panel de Administración</h2>
+        <div>
+            <button class="home-button" id="homeButton">Inicio</button>
+            <button class="questions-button" id="questionsButton">Administrar preguntas</button>
+            <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        </div>
+    </header>
+    
+    <main class="admin-container">
+        <section id="messageBox" class="message-box hidden">
+            <span id="messageText"></span>
+        </section>
+        
+        <section id="addUserSection" class="form-container">
+            <h3>Añadir Usuario</h3>
+            <form id="addUserForm" action="/users" method="POST">
+                <div class="form-group">
+                    <label for="first_name">Nombre</label>
+                    <input type="text" id="first_name" name="first_name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="last_name">Apellidos</label>
+                    <input type="text" id="last_name" name="last_name" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="username">Usuario</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Contraseña:</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="isAdmin">
+                        <input type="checkbox" id="isAdmin" name="isAdmin" value="1">
+                        ¿Es administrador?
+                    </label>
+                </div>
+                
+                <button type="submit">Añadir Usuario</button>
+            </form>
+        </section>
+
+        <section class="table-container">
+            <h3>Lista de Usuarios</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Usuario</th>
+                        <th>Nombre</th>
+                        <th>Apellidos</th>
+                        <th>Admin</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% users.forEach(user => { %>
+                    <tr>
+                        <td><%= user.id %></td>
+                        <td><%= user.username %></td>
+                        <td><%= user.first_name %></td>
+                        <td><%= user.last_name %></td>
+                        <td><%= user.is_admin === 1 ? 'Sí' : 'No' %></td>
+                        <td>
+                            <button class="edit-button" data-id="<%= user.id %>">Editar</button>
+                            <button class="delete-button" data-id="<%= user.id %>">Eliminar</button>
+                        </td>
+                    </tr>
+                    <% }) %>
+                </tbody>
+                
+            </table>
+        </section>
+    </main>
+    
+    <div id="editModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h3>Editar Usuario</h3>
+            <form id="editForm">
+                <input type="hidden" name="id" id="editId">
+    
+                <div class="form-group">
+                    <label for="editFirstName">Nombre</label>
+                    <input type="text" id="editFirstName" name="editFirstName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editLastName">Apellidos</label>
+                    <input type="text" id="editLastName" name="editLastName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editUser">Usuario</label>
+                    <input type="text" id="editUser" name="editUser" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editPassword">Contraseña</label>
+                    <input type="password" id="editPassword" name="editPassword" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="editIsAdmin">
+                        <input type="checkbox" id="editIsAdmin" name="editIsAdmin" value="1">
+                        ¿Es administrador?
+                    </label>
+                </div>
+                
+                <button type="submit">Guardar Cambios</button>
+            </form>
+        </div>
+    </div>    
+    
+    <script src="/js/script.js"></script>
+</body>
+</html>

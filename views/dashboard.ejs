@@ -11,6 +11,9 @@
         <h2>Panel de Administración</h2>
         <div>
             <button class="home-button" id="homeButton">Inicio</button>
+            <% if (isAdmin) { %>
+                <button class="users-button" id="usersButton">Administrar usuarios</button>
+            <% } %>
             <button class="logout-button" id="logoutButton">Cerrar sesión</button>
         </div>
     </header>
@@ -75,6 +78,7 @@
                         <th>Número</th>
                         <th>Pregunta</th>
                         <th>Respuesta</th>
+                        <th>Imagen</th>
                         <th>Grupo</th>
                         <th>Acciones</th>
                     </tr>
@@ -85,6 +89,13 @@
                         <td><%= question.number %></td>
                         <td><%= question.question %></td>
                         <td><%= question.answer %></td>
+                        <td>
+                            <% if (question.image) { %>
+                                <img src="/img/<%= question.image %>" alt="Imagen de la pregunta" height="50">
+                            <% } else { %>
+                                No Imagen
+                            <% } %>
+                        </td>
                         <td><%= question.group_id %></td>
                         <td>
                             <button class="edit-button" data-id="<%= question.id %>">Editar</button>
@@ -97,7 +108,7 @@
         </section>
     </main>
     
-    <div id="editModal" class="modal hidden">
+    <div id="editModal" class="modal hidden edit-question-form">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h3>Editar Pregunta</h3>
@@ -112,6 +123,12 @@
                 <div class="form-group">
                     <label for="editImage">Imagen (opcional):</label>
                     <input type="file" id="editImage" name="editImage" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <img id="showImage" src="" alt="Imagen de la pregunta" height="50" style="display: none;">
+                    <span id="imageText" style="display: none;">No contiene imagen</span>
+                    <button type="button" id="deleteImageButton" style="display: none;">Eliminar Imagen</button>
                 </div>
                 
                 <div class="form-group">

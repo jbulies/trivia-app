@@ -23,7 +23,7 @@ body {
 
 .title {
     flex-grow: 1;
-    margin-left: 135px;
+    margin-right: 60px;
     text-align: center;
 }
 
@@ -73,12 +73,11 @@ body {
 /* Página de preguntas */
 .question-page {
     width: 90%;
-    max-width: 600px;
+    max-width: 800px;
     background-color: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    text-align: center;
 }
 
 .question-page #questionText {
@@ -121,8 +120,27 @@ body {
     transition: background-color 0.3s;
 }
 
-.question-page button:hover {
-    background-color: #0056b3;
+.question-page #answerOptions button {
+    background-color: transparent;
+    border: 1px solid gray;
+    color: #333333;
+}
+
+.question-page #correctAnswer:hover {
+    background-color: #d4edda;
+    border: 1px solid #d4edda;
+    color: #155724;
+}
+
+.question-page #wrongAnswer:hover {
+    background-color: #f8d7da;
+    border: 1px solid #f8d7da;
+    color: #721c24;
+}
+
+.score-page #scoreOptions {
+    text-align: center;
+    margin-top: 20px;
 }
 
 /* Pie de página */
@@ -135,14 +153,8 @@ body {
     margin: 3px 3px;
 }
 
-/*******/
 /* Contenedor del login */
 .login-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-grow: 1;
-    padding: 20px;
     background-color: #f0f0f0;
 }
 
@@ -169,16 +181,17 @@ body {
 
 .form-group label {
     display: block;
+    margin-top: 5px;
     margin-bottom: 5px;
     font-weight: bold;
 }
 
 .form-group input {
     width: 100%;
-    max-width: 328.4px;
     padding: 10px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    box-sizing: border-box;
 }
 
 .login-box button {
@@ -195,6 +208,27 @@ body {
 
 .login-box button:hover {
     background-color: #0056b3;
+}
+
+.login-row {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    max-width: 400px;
+    margin: auto;
+    justify-content: center;
+}
+
+.login-row .error-message {
+    padding: 10px;
+    background-color: #f8d7da;
+    color: #721c24;
+    border-radius: 5px;
+    margin-bottom: 15px; /* Agrega margen inferior para separarlo del login-container */
+    text-align: center; /* Centra el texto del mensaje de error */
+    width: 100%; /* Ocupa el ancho completo del login-row */
+    box-sizing: border-box; /* Incluye el padding en el ancho */
 }
 
 /* Responsividad */
@@ -215,7 +249,6 @@ body {
         padding: 10px;
     }
 }
-/******/
 
 /***********/
 .admin-header {
@@ -231,6 +264,59 @@ body {
 .admin-container {
     max-width: 1200px;
     margin: 0px auto;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+  
+.dropdown-toggle {
+    background-color: transparent;
+    color: #000000;
+    border: none;
+    padding: 10px 15px;
+    cursor: pointer;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+}
+
+.dropdown-toggle:hover {
+    background-color: #ddd;
+}
+  
+.menu-icon {
+    width: 24px;
+    height: 24px;
+    fill: #000000;
+}
+  
+.dropdown-menu {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background-color: #f9f9f9;
+    min-width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 3;
+    list-style: none;
+    padding: 6px 0px 6px;
+    margin: 0;
+    border-radius: 5px;
+    display: none;
+}
+  
+.dropdown-menu li a {
+    color: #000000;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    transition: background-color 0.3s ease;
+}
+  
+.dropdown-menu li a:hover {
+    background-color: #ddd;
 }
 
 .message-box {
@@ -277,7 +363,7 @@ body {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    max-width: 320px;
+    max-width: 350px;
 }
 
 #addUserSection {
@@ -293,6 +379,7 @@ body {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    max-width: 350px;
 }
 
 #addUserSection .form-group #isAdmin {
@@ -310,6 +397,7 @@ body {
 
 button {
     background-color: #007BFF;
+    font-size: 1rem;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -367,24 +455,16 @@ tr:hover {
     background-color: #f5f5f5;
 }
 
-tr td:last-child {
-    min-width: 150px;
+.admin-container tr td:nth-child(4) {
+    min-width: 79px;
 }
 
-@media (max-width: 768px) {
-    .admin-header {
-        flex-direction: column;
-        text-align: center;
-    }
+.admin-container tr td:last-child {
+    min-width: 165px;
+}
 
-    .admin-container {
-        padding: 10px;
-    }
-
-    table {
-        display: block;
-        overflow-x: auto;
-    }
+#scorePage tr td {
+    min-width: 100px;
 }
 
 /* Estilos para el modal */
@@ -409,6 +489,15 @@ tr td:last-child {
     max-width: 600px;
 }
 
+.edit-users .modal-content {
+    background-color: white;
+    margin: 10% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 50%;
+    max-width: 400px;
+}
+
 #editModal .form-group textarea {
     width: 100%;
     padding: 8px;
@@ -423,7 +512,11 @@ tr td:last-child {
     padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
-    max-width: 320px;
+    max-width: 350px;
+}
+
+.edit-users .form-group input {
+    max-width: 100% !important;
 }
 
 #editModal .form-group select {
@@ -464,23 +557,14 @@ tr td:last-child {
     color: red;
 }
 
-/***********
-
 /* Estilos responsivos */
-@media (max-width: 998px) {
-    .title h2 {
-        font-size: 1rem;
-    }
-}
-
-@media (max-width: 868px) {
-    .header {
-        flex-direction: column;
-        text-align: center;
-    }
-
+@media (max-width: 768px) {
     .logo img {
         height: 35px;
+    }
+
+    .title h2 {
+        font-size: 1rem;
     }
 
     .title {
@@ -499,8 +583,8 @@ tr td:last-child {
 }
 
 @media (max-width: 480px) {
-    .title h2 {
-        font-size: 1rem;
+    .title {
+        display: none;
     }
 
     .question-page {

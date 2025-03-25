@@ -2,6 +2,9 @@
 // LÓGICA PARA LA PÁGINA PRINCIPAL (index.ejs)
 // ===============================
 const mainDiv = document.getElementById('main');
+const dropdownToggle = document.querySelector('.dropdown-toggle');
+const dropdownMenu = document.querySelector('.dropdown-menu');
+const scorePage = document.getElementById('scorePage');
 const questionPage = document.getElementById('questionPage');
 const questionText = document.getElementById('questionText');
 const questionImage = document.getElementById('questionImage');
@@ -13,7 +16,38 @@ const timerElement = document.getElementById('timer');
 let timerInterval;
 let selectedButton;
 
+dropdownToggle.addEventListener('click', (event) => {
+    event.stopPropagation();
+    dropdownMenu.style.display = dropdownMenu.style.display === 'block' ? 'none' : 'block';
+});
+
+window.addEventListener('click', (event) => {
+    if (dropdownMenu.style.display === 'block' && !event.target.matches('.dropdown-toggle') && !event.target.closest('.dropdown-menu')) {
+        dropdownMenu.style.display = 'none';
+    }
+});
+
+// Agrega un event listener al menú desplegable para ocultarlo al hacer clic en un elemento
+dropdownMenu.addEventListener('click', () => {
+    dropdownMenu.style.display = 'none';
+});
+
 if (mainDiv && questionPage) {
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownMenu = document.querySelector('.dropdown-menu');
+    
+    dropdownToggle.addEventListener('click', () => {
+      dropdownMenu.classList.toggle('show');
+    });
+    
+    window.addEventListener('click', (event) => {
+      if (!event.target.matches('.dropdown-toggle') && !event.target.closest('.dropdown-menu')) {
+        if (dropdownMenu.classList.contains('show')) {
+          dropdownMenu.classList.remove('show');
+        }
+      }
+    });
+
     const groupColors = {
         1: '#FFEB3B',  // Amarillo
         2: '#F44336',  // Rojo
@@ -77,11 +111,26 @@ if (mainDiv && questionPage) {
 
                 selectedButton = selectedChild;
 
+                switch (data.group_id) {
+                    case 1:
+                        currentTeam = 'amarillo';
+                        break;
+                    case 2:
+                        currentTeam = 'rojo';
+                        break;
+                    case 3:
+                        currentTeam = 'azul';
+                        break;
+                    default:
+                        currentTeam = '';
+                        console.warn('Grupo sin asignar.');
+                }
+
                 // Muestra los datos de la pregunta
-                questionText.innerText = data.question;
+                questionText.innerHTML = data.question;
                 questionImage.src = data.image ? `/img/${data.image}` : '';
                 questionImage.style.display = data.image ? 'block' : 'none';
-                answerText.innerText = data.answer;
+                answerText.innerHTML = data.answer;
                 answerText.style.display = 'none';
                 questionPage.style.display = 'block';
                 mainDiv.style.display = 'none';
@@ -111,6 +160,122 @@ if (mainDiv && questionPage) {
         }, 1000);
     }
 
+    // Botones
+    const correctAnswerBtn = document.getElementById('correctAnswer');
+    const wrongAnswerBtn = document.getElementById('wrongAnswer');
+
+    const scoresByRound = [];
+
+    let currentRound = {
+        amarillo: 0,
+        rojo: 0,
+        azul: 0
+    };
+
+    let answersThisRound = { // Rastrea cuántas veces ha respondido cada equipo
+        amarillo: 0,
+        rojo: 0,
+        azul: 0
+    };
+
+    let teamsAnsweredThisRound = new Set(); // Controla qué equipos han respondido al menos una vez
+    let currentTeam = null; // El equipo actual
+
+    // Botón para respuesta correcta
+    correctAnswerBtn.addEventListener('click', () => {
+        if (currentTeam) {
+            currentRound[currentTeam] += 1;
+            answersThisRound[currentTeam] += 1;
+            teamsAnsweredThisRound.add(currentTeam);
+            checkRoundEnd();
+            goBack();
+        }
+    });
+
+    // Botón para respuesta incorrecta
+    wrongAnswerBtn.addEventListener('click', () => {
+        if (currentTeam) {
+            currentRound[currentTeam] += 0;
+            answersThisRound[currentTeam] += 1;
+            teamsAnsweredThisRound.add(currentTeam);
+            checkRoundEnd();
+            goBack();
+        }
+    });
+
+    // Chequea si los tres equipos respondieron y todos respondieron la misma cantidad (la máxima alcanzada)
+    function checkRoundEnd() {
+        if (teamsAnsweredThisRound.size === 3) {
+            const maxAnswers = Math.max(
+                answersThisRound.amarillo,
+                answersThisRound.rojo,
+                answersThisRound.azul
+            );
+
+            if (answersThisRound.amarillo === maxAnswers &&
+                answersThisRound.rojo === maxAnswers &&
+                answersThisRound.azul === maxAnswers) {
+                endRound();
+            }
+        }
+    }
+
+    function endRound() {
+        // Guarda una copia del resultado de la ronda
+        scoresByRound.push({ ...currentRound });
+
+        // Resetea para la siguiente ronda
+        currentRound = { amarillo: 0, rojo: 0, azul: 0 };
+        answersThisRound = { amarillo: 0, rojo: 0, azul: 0 };
+        teamsAnsweredThisRound.clear();
+        updateScoreTable();
+    }
+
+    // Actualiza la tabla completa
+    function updateScoreTable() {
+        const tableBody = document.querySelector('#scoreTable tbody');
+        tableBody.innerHTML = ''; // Limpiar tabla
+
+        scoresByRound.forEach((round, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td>Ronda ${index + 1}</td>
+                <td>${round.amarillo}</td>
+                <td>${round.rojo}</td>
+                <td>${round.azul}</td>
+            `;
+            tableBody.appendChild(row);
+        });
+
+        // Agregar totales al final
+        const total = scoresByRound.reduce(
+            (acc, round) => {
+                acc.amarillo += round.amarillo;
+                acc.rojo += round.rojo;
+                acc.azul += round.azul;
+                return acc;
+            },
+            { amarillo: 0, rojo: 0, azul: 0 }
+        );
+
+        const totalRow = document.createElement('tr');
+        totalRow.innerHTML = `
+            <td><strong>Total</strong></td>
+            <td><strong>${total.amarillo}</strong></td>
+            <td><strong>${total.rojo}</strong></td>
+            <td><strong>${total.azul}</strong></td>
+        `;
+        tableBody.appendChild(totalRow);
+    }
+
+    function showScore() {
+        clearInterval(timerInterval);
+        mainDiv.style.display = 'none';
+        questionPage.style.display = 'none';
+        scorePage.style.display = 'block';
+        updateScoreTable();
+    }
+
     function showAnswer() {
         clearInterval(timerInterval);
         answerText.style.display = 'inline';
@@ -118,9 +283,10 @@ if (mainDiv && questionPage) {
     }
 
     function goBack() {
-        questionPage.style.display = 'none';
-        mainDiv.style.display = 'grid';
         clearInterval(timerInterval);
+        questionPage.style.display = 'none';
+        scorePage.style.display = 'none';
+        mainDiv.style.display = 'grid';
 
         if (selectedButton) {
             // Cambiar el color del botón seleccionado a verde
@@ -134,13 +300,133 @@ if (mainDiv && questionPage) {
         showAnswerButton.onclick = showAnswer;
     }
 
+    if (timeUpSound) {
+        timeUpSound.load();
+    } 
+
     window.goBack = goBack;
 }
+
+const messageBox = document.getElementById('messageBox');
+const messageText = document.getElementById('messageText');
+const modalMessageBox = document.getElementById('modalMessageBox');
+const modalMessageText = document.getElementById('modalMessageText');
+const questionsMessageBox = document.getElementById('questionsMessageBox');
+const questionsMessageText = document.getElementById('questionsMessageText');
+const usersMessageBox = document.getElementById('usersMessageBox');
+const usersMessageText = document.getElementById('usersMessageText');
+const reorderMessageBox = document.getElementById('reorderMessageBox');
+const reorderMessageText = document.getElementById('reorderMessageText');
+
+const showMessage = (message, type = 'success') => {
+    messageText.textContent = message;
+    messageBox.style.display = 'block';
+    messageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    messageBox.style.color = type === 'success' ? '#155724' : '#721c24';
+    messageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
+    setTimeout(() => {
+        messageBox.style.display = 'none';
+        location.reload(); // Recarga la página para reflejar los cambios
+    }, 2000);
+};
+
+const showQuestionsMessage = (message, type = 'success') => {
+    questionsMessageText.textContent = message;
+    questionsMessageBox.style.display = 'block';
+    questionsMessageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    questionsMessageBox.style.color = type === 'success' ? '#155724' : '#721c24';
+    questionsMessageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
+    setTimeout(() => {
+        questionsMessageBox.style.display = 'none';
+        location.reload(); // Recarga la página para reflejar los cambios
+    }, 2000);
+};
+
+const showUsersMessage = (message, type = 'success') => {
+    usersMessageText.textContent = message;
+    usersMessageBox.style.display = 'block';
+    usersMessageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    usersMessageBox.style.color = type === 'success' ? '#155724' : '#721c24';
+    usersMessageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
+    setTimeout(() => {
+        usersMessageBox.style.display = 'none';
+        location.reload(); // Recarga la página para reflejar los cambios
+    }, 2000);
+};
+
+const showModalMessage = (message, type = 'success') => {
+    modalMessageText.textContent = message;
+    modalMessageBox.style.display = 'block';
+    modalMessageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    modalMessageBox.style.color = type === 'success' ? '#155724' : '#721c24';
+    modalMessageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
+    setTimeout(() => {
+        modalMessageBox.style.display = 'none';
+        location.reload(); // Recarga la página para reflejar los cambios
+    }, 2000);
+};
+
+const showReorderMessage = (message, type = 'success') => {
+    reorderMessageText.textContent = message;
+    reorderMessageBox.style.display = 'block';
+    reorderMessageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
+    reorderMessageBox.style.color = type === 'success' ? '#155724' : '#721c24';
+    reorderMessageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
+    setTimeout(() => {
+        reorderMessageBox.style.display = 'none';
+        location.reload(); // Recarga la página para reflejar los cambios
+    }, 2000);
+};
 
 // ===============================
 // LÓGICA PARA ADMINISTRAR PREGUNTAS (dashboard.ejs)
 // ===============================
 if (window.location.pathname === '/dashboard') {
+    document.addEventListener('DOMContentLoaded', () => {
+        // Inicializar TinyMCE
+        tinymce.init({
+            selector: '#question, #answer, #editQuestion, #editAnswer',
+            height: 200,
+            menubar: false,
+            plugins: 'lists link image code',
+            toolbar: 'undo redo | bold italic | alignleft aligncenter alignright | bullist numlist | code',
+            license_key: 'gpl'
+        });
+    
+        const formPregunta = document.getElementById('formQuestion');
+        const saveButton = document.getElementById('saveButton');
+    
+        saveButton.addEventListener('click', (e) => {
+            e.preventDefault();
+    
+            // Guardar el contenido de TinyMCE en el textarea
+            tinymce.triggerSave();
+    
+            if (!formPregunta) {
+                console.error('No se encontró el formulario.');
+                return;
+            }
+    
+            const formData = new FormData(formPregunta);
+    
+            fetch('/dashboard', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    showMessage(data.message); // Muestra el mensaje de éxito
+                } else {
+                    showMessage(data.message, 'error'); // Muestra el mensaje de error
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+    
     const editModal = document.getElementById('editModal');
     const closeModal = document.querySelector('.close');
     
@@ -149,9 +435,9 @@ if (window.location.pathname === '/dashboard') {
         document.querySelectorAll('.edit-button').forEach(button => {
             button.addEventListener('click', () => {
                 const row = button.closest('tr');
-                const questionId = button.getAttribute('data-id'); // Obtener el ID de la pregunta
-                const question = row.querySelector('td:nth-child(2)').textContent;
-                const answer = row.querySelector('td:nth-child(3)').textContent;
+                const questionId = button.getAttribute('data-id');
+                const question = row.querySelector('td:nth-child(2)').innerHTML;
+                const answer = row.querySelector('td:nth-child(3)').innerHTML;
         
                 // Obtener la imagen, si está presente en la celda
                 const imageCell = row.querySelector('td:nth-child(4)');
@@ -160,8 +446,6 @@ if (window.location.pathname === '/dashboard') {
                 const groupId = row.querySelector('td:nth-child(5)').textContent;
         
                 // Establecer los valores en los campos del formulario
-                document.getElementById('editQuestion').value = question;
-                document.getElementById('editAnswer').value = answer;
                 document.getElementById('editGroupId').value = groupId;
                 document.querySelector('#editForm [name="id"]').value = questionId;
         
@@ -177,7 +461,9 @@ if (window.location.pathname === '/dashboard') {
                     document.getElementById('deleteImageButton').style.display = 'none'; // Ocultamos el botón de eliminar imagen
                 }
         
-                editModal.style.display = 'block';
+                // Establecer el contenido de la pregunta y la respuesta en el editor TinyMCE
+                tinymce.get('editQuestion').setContent(question);
+                tinymce.get('editAnswer').setContent(answer);
         
                 // Agregar la lógica para eliminar la imagen
                 document.getElementById('deleteImageButton').addEventListener('click', async () => {
@@ -192,17 +478,18 @@ if (window.location.pathname === '/dashboard') {
                             document.getElementById('showImage').style.display = 'none';
                             document.getElementById('imageText').style.display = 'block';
                             document.getElementById('deleteImageButton').style.display = 'none';
-                            alert('Imagen eliminada correctamente');
+                            showModalMessage(data.message);
                         } else {
-                            alert('Hubo un problema al eliminar la imagen');
+                            showModalMessage(data.message, 'error');
                         }
                     } catch (err) {
                         console.error(err);
-                        alert('Error al intentar eliminar la imagen');
+                        showModalMessage(data.message, 'error');
                     }
                 });
+                editModal.style.display = 'block';
             });
-        });               
+        });
     
         closeModal.addEventListener('click', () => {
             editModal.style.display = 'none';
@@ -210,10 +497,19 @@ if (window.location.pathname === '/dashboard') {
     
         document.getElementById('editForm').addEventListener('submit', (e) => {
             e.preventDefault();
-    
+        
             const formData = new FormData(e.target);
+            
+            // Obtén el contenido de TinyMCE
+            const questionContent = tinymce.get('editQuestion').getContent({format: 'raw'}); // Usa raw para obtener el HTML sin el formateo extra
+            const answerContent = tinymce.get('editAnswer').getContent({format: 'raw'});
+
+            // Agrega los contenidos de TinyMCE al FormData
+            formData.set('editQuestion', questionContent);
+            formData.set('editAnswer', answerContent);
+        
             const id = formData.get('id'); // Obtener el ID desde el formulario
-    
+        
             fetch(`/dashboard/${id}`, {
                 method: 'PUT',
                 body: formData
@@ -221,16 +517,16 @@ if (window.location.pathname === '/dashboard') {
             .then(response => response.json())
             .then(data => {
                 if (data.success) {
-                    location.reload();
+                    showModalMessage(data.message);
                 } else {
-                    alert(data.message); // Mostrar mensaje de error
+                    showModalMessage(data.message, 'error');
                 }
             })
             .catch(error => {
                 console.error('Error:', error);
-                alert('Ocurrió un error inesperado.');
             });
         });
+        
     
         document.querySelectorAll('.delete-button').forEach(button => {
             button.addEventListener('click', () => {
@@ -242,52 +538,13 @@ if (window.location.pathname === '/dashboard') {
                     .then(response => response.json())
                     .then(data => {
                         if (data.success) {
-                            location.reload();
+                            showQuestionsMessage(data.message);
+                        } else {
+                            showQuestionsMessage(data.message, 'error');
                         }
                     })
                     .catch(error => console.error('Error:', error));
                 }
-            });
-        });
-    
-        document.getElementById('addQuestionForm').addEventListener('submit', (e) => {
-            e.preventDefault();
-    
-            const formData = new FormData(e.target);
-    
-            fetch('/dashboard', {
-                method: 'POST',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                const messageBox = document.getElementById('messageBox');
-                const messageText = document.getElementById('messageText');
-    
-                if (data.success) {
-                    // Mostrar mensaje de éxito
-                    messageText.textContent = data.message;
-                    messageBox.style.backgroundColor = '#d4edda';
-                    messageBox.style.color = '#155724';
-                    messageBox.style.borderColor = '#c3e6cb';
-                    messageBox.style.display = 'block';
-    
-                    // Recargar la página después de 2 segundos
-                    setTimeout(() => {
-                        location.reload();
-                    }, 2000);
-                } else {
-                    // Mostrar mensaje de error
-                    messageText.textContent = data.message;
-                    messageBox.style.backgroundColor = '#f8d7da';
-                    messageBox.style.color = '#721c24';
-                    messageBox.style.borderColor = '#f5c6cb';
-                    messageBox.style.display = 'block';
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Ocurrió un error inesperado.');
             });
         });
     }
@@ -303,15 +560,13 @@ if (window.location.pathname === '/dashboard') {
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
-                        alert('Preguntas reordenadas correctamente.');
-                        location.reload(); // Recargar la página para ver los cambios
+                        showReorderMessage(data.message); // Muestra el mensaje de éxito
                     } else {
-                        alert('Error al reordenar las preguntas.');
+                        showReorderMessage(data.message, 'error'); // Muestra el mensaje de error
                     }
                 })
                 .catch(error => {
                     console.error('Error:', error);
-                    alert('Error al reordenar las preguntas.');
                 });
             }
         });
@@ -323,8 +578,6 @@ if (window.location.pathname === '/dashboard') {
 // ===============================
 if (window.location.pathname === '/users') {
     const addUserForm = document.getElementById('addUserForm');
-    const messageBox = document.getElementById('messageBox');
-    const messageText = document.getElementById('messageText');
 
     if (addUserForm) {
         addUserForm.addEventListener('submit', async (event) => {
@@ -353,32 +606,10 @@ if (window.location.pathname === '/users') {
         });
     }
 
-    const showMessage = (message, type = 'success') => {
-        messageText.textContent = message;
-        messageBox.style.display = 'block';
-        messageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-        messageBox.style.color = type === 'success' ? '#155724' : '#721c24';
-        messageBox.style.borderColor = type === 'success' ? '#c3e6cb' : '#f5c6cb';
-        setTimeout(() => {
-            messageBox.style.display = 'none';
-            location.reload(); // Recarga la página para mostrar el nuevo usuario
-        }, 2000);
-    };
-
     const editModal = document.getElementById('editModal');
     const closeModal = document.querySelector('.close');
 
     if (editModal && closeModal) {
-        const messageBox = document.getElementById('messageBox');
-        const messageText = document.getElementById('messageText');
-
-        const showMessage = (message, type = 'success') => {
-            messageText.textContent = message;
-            messageBox.style.display = 'block';
-            messageBox.style.backgroundColor = type === 'success' ? '#d4edda' : '#f8d7da';
-            setTimeout(() => location.reload(), 2000);
-        };
-
         document.querySelectorAll('.edit-button').forEach(button => {
             button.addEventListener('click', () => {
                 const row = button.closest('tr');
@@ -429,8 +660,8 @@ if (window.location.pathname === '/users') {
             });
 
             const data = await res.json();
-            if (data.success) showMessage(data.message);
-            else showMessage(data.message, 'error');
+            if (data.success) showModalMessage(data.message);
+            else showModalMessage(data.message, 'error');
         });
 
         document.querySelectorAll('.delete-button').forEach(button => {
@@ -441,8 +672,8 @@ if (window.location.pathname === '/users') {
                 const res = await fetch(`/users/${id}`, { method: 'DELETE' });
                 const data = await res.json();
 
-                if (data.success) showMessage(data.message);
-                else showMessage(data.message, 'error');
+                if (data.success) showUsersMessage(data.message);
+                else showUsersMessage(data.message, 'error');
             });
         });
     }

@@ -9,12 +9,19 @@
 <body>
     <header class="admin-header">
         <h2>Panel de Administración</h2>
-        <div>
-            <button class="home-button" id="homeButton">Inicio</button>
-            <% if (isAdmin) { %>
-                <button class="users-button" id="usersButton">Administrar usuarios</button>
-            <% } %>
-            <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        <div class="dropdown">
+            <button class="dropdown-toggle">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="menu-icon">
+                    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#" id="homeButton">Inicio</a></li>
+                <% if (isAdmin) { %>
+                    <li><a href="#" id="usersButton">Administrar usuarios</a></li>
+                <% } %>
+                <li><a href="#" id="logoutButton">Cerrar sesión</a></li>
+            </ul>
         </div>
     </header>
     
@@ -25,7 +32,7 @@
         
         <section id="addQuestionForm" class="form-container">
             <h3>Añadir Pregunta</h3>
-            <form action="/dashboard" method="POST" enctype="multipart/form-data">
+            <form id="formQuestion" action="/dashboard" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
                     <label for="question">Pregunta:</label>
                     <textarea id="question" name="question" required></textarea>
@@ -50,8 +57,12 @@
                     </select>
                 </div>
                 
-                <button type="submit">Añadir Pregunta</button>
+                <button id="saveButton" type="submit">Añadir Pregunta</button>
             </form>
+        </section>
+
+        <section id="reorderMessageBox" class="message-box hidden">
+            <span id="reorderMessageText"></span>
         </section>
 
         <section class="admin-actions">
@@ -68,6 +79,10 @@
             <p>
                 <strong>Nota:</strong> Esta acción no puede deshacerse.
             </p>
+        </section>
+
+        <section id="questionsMessageBox" class="message-box hidden">
+            <span id="questionsMessageText"></span>
         </section>
         
         <section class="table-container">
@@ -87,8 +102,8 @@
                     <% questions.forEach(question => { %>
                     <tr>
                         <td><%= question.number %></td>
-                        <td><%= question.question %></td>
-                        <td><%= question.answer %></td>
+                        <td><%- question.question %></td>
+                        <td><%- question.answer %></td>
                         <td>
                             <% if (question.image) { %>
                                 <img src="/img/<%= question.image %>" alt="Imagen de la pregunta" height="50">
@@ -111,13 +126,16 @@
     <div id="editModal" class="modal hidden edit-question-form">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <section id="modalMessageBox" class="message-box hidden">
+                <span id="modalMessageText"></span>
+            </section>
             <h3>Editar Pregunta</h3>
             <form id="editForm">
                 <input type="hidden" name="id" id="editId">
                 
                 <div class="form-group">
                     <label for="editQuestion">Pregunta:</label>
-                    <textarea id="editQuestion" name="editQuestion" required></textarea>
+                    <textarea id="editQuestion" name="editQuestion"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -133,7 +151,7 @@
                 
                 <div class="form-group">
                     <label for="editAnswer">Respuesta:</label>
-                    <textarea id="editAnswer" name="editAnswer" required></textarea>
+                    <textarea id="editAnswer" name="editAnswer"></textarea>
                 </div>
                 
                 <div class="form-group">
@@ -145,11 +163,12 @@
                     </select>
                 </div>
                 
-                <button type="submit">Guardar Cambios</button>
+                <button id="saveButton" type="submit">Guardar Cambios</button>
             </form>
         </div>
     </div>
-    
+
+    <script src="/tinymce/tinymce.min.js"></script>
     <script src="/js/script.js"></script>
 </body>
 </html>

@@ -17,6 +17,7 @@ const port = process.env.PORT || 3000;
 const sessionStore = new MySQLSessionStore({}, pool);
 
 // Middleware
+app.use('/tinymce', express.static(__dirname + '/node_modules/tinymce'));
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(express.static('assets'));
@@ -65,8 +66,13 @@ const isAuthenticated = (req, res, next) => {
 app.get('/', isAuthenticated, async (req, res) => {
     const userId = req.session.user_id;
     try {
+        const [usersData] = await pool.query('SELECT * FROM users WHERE id = ?', [userId]);
         const [results] = await pool.query('SELECT * FROM questions ORDER BY number', [userId]);
-        res.render('index', { questions: results, baseUrl: process.env.URL });
+
+        const user = usersData[0];
+
+        res.render('index', { isAdmin: user.is_admin === 1, questions: results, baseUrl: process.env.URL });
+        
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Error interno del servidor.' });
@@ -111,7 +117,8 @@ app.get('/question/:number', isAuthenticated, async (req, res) => {
 
 // Página de inicio de sesión administrador
 app.get('/login', (req, res) => {
-    res.render('login');
+    const error = req.query.error; // Capturamos el query param error si viene
+    res.render('login', { error }); // Se lo pasamos como variable a la vista
 });
 
 // Inicio de sesión administrador
@@ -119,12 +126,12 @@ app.post('/login', async (req, res) => {
     const { username, password } = req.body;
 
     try {
-        // Consultar el usuario en la base de datos
-        const [user] = await pool.query('SELECT * FROM users WHERE username = ?', [username]);
+        // Consulta SQL con sensibilidad a mayúsculas y minúsculas
+        const [user] = await pool.query('SELECT * FROM users WHERE BINARY username = ?', [username]);
 
         // Verificar si el usuario existe
         if (user.length === 0) {
-            return res.redirect('/login');
+            return res.redirect('/login?error=true');
         }
 
         // Comparar la contraseña ingresada con el hash en la base de datos
@@ -138,7 +145,7 @@ app.post('/login', async (req, res) => {
             return res.redirect('/');
         } else {
             // Si la contraseña no es válida, redirigir al login
-            return res.redirect('/login');
+            return res.redirect('/login?error=true');
         }
     } catch (err) {
         console.error(err);
@@ -203,24 +210,46 @@ app.post('/dashboard', upload.single('image'), async (req, res) => {
     }
 
     try {
+        // Buscar el número máximo en el rango actual del grupo
         const [[{ last_number }]] = await pool.query(`
             SELECT MAX(number) AS last_number 
             FROM questions 
             WHERE group_id = ? AND number BETWEEN ? AND ?
         `, [group_id, minNumber, maxNumber]);
-
+    
+        // Verificar si ya existe un número máximo o si no existe ninguna pregunta
         const lastNumber = last_number || (minNumber - 1);
-        const newNumber = lastNumber + 1;
-
+    
+        // Buscar el primer número faltante en el rango de números
+        let newNumber = null;
+        for (let i = minNumber; i <= maxNumber; i++) {
+            const [[existing]] = await pool.query(`
+                SELECT 1 FROM questions WHERE group_id = ? AND number = ?`, [group_id, i]);
+    
+            // Si no existe una pregunta con ese número, lo tomamos como el nuevo número
+            if (!existing) {
+                newNumber = i;
+                break;
+            }
+        }
+    
+        // Si no encontramos ningún hueco, entonces usamos el último número disponible + 1
+        if (newNumber === null) {
+            newNumber = lastNumber + 1;
+        }
+    
+        // Si el número nuevo excede el máximo permitido, no se pueden agregar más preguntas
         if (newNumber > maxNumber) {
-            return res.status(400).json({ success: false, message: `No se pueden agregar más preguntas al grupo ${group_id}.` });
+            return res.status(400).json({
+                success: false,
+                message: `No se pueden agregar más preguntas al grupo ${group_id}.`
+            });
         }
 
         await pool.query('INSERT INTO questions (number, question, image, answer, group_id, user_id) VALUES (?, ?, ?, ?, ?, ?)', [
             newNumber, question, image, answer, group_id, user_id
         ]);
 
-        console.log('Pregunta agregada con éxito.');
         return res.json({ success: true, message: 'Pregunta agregada con éxito.' });
     } catch (err) {
         console.error(err);
@@ -232,7 +261,6 @@ app.post('/dashboard', upload.single('image'), async (req, res) => {
 app.post('/reorder-questions', isAuthenticated, async (req, res) => {
     try {
         const userId = req.session.user_id; // Aquí va el ID del usuario autenticado
-        console.log(`Reordenando preguntas para el usuario ${userId}`);
 
         const [questions] = await pool.query(`
             SELECT id, group_id
@@ -290,7 +318,7 @@ app.post('/reorder-questions', isAuthenticated, async (req, res) => {
             `, [finalNumber, questionId]);
         }
 
-        res.json({ success: true, message: `Preguntas reordenadas correctamente para el usuario ${userId}.` });
+        res.json({ success: true, message: 'Preguntas reordenadas correctamente.' });
 
     } catch (err) {
         console.error('Error al reordenar preguntas:', err);
@@ -337,8 +365,6 @@ app.put('/dashboard/:id', upload.single('editImage'), async (req, res) => {
                 if (err) {
                     console.error(`Error al eliminar la imagen anterior ${oldImage}:`, err);
                     // Considera si quieres enviar una respuesta de error o solo registrarlo
-                } else {
-                    console.log(`Imagen anterior eliminada: ${oldImage}`);
                 }
             });
         }
@@ -371,8 +397,6 @@ app.delete('/dashboard/:id/deleteImage', async (req, res) => {
                         if (err) {
                             console.error('Error eliminando la imagen:', err);
                             return res.status(500).json({ success: false, message: 'Error al eliminar la imagen.' });
-                        } else {
-                            console.log('Imagen eliminada:', question.image);
                         }
                     });
                 } else {
@@ -413,8 +437,6 @@ app.delete('/dashboard/:id', async (req, res) => {
                     fs.unlink(imagePath, (err) => {
                         if (err) {
                             console.error('Error eliminando la imagen:', err);
-                        } else {
-                            console.log('Imagen eliminada:', question.image);
                         }
                     });
                 } else {
@@ -456,15 +478,21 @@ app.post('/users', uploadUsers.none(), async (req, res) => {
     const isAdmin = req.body.isAdmin === '1' ? 1 : 0;
 
     try {
+        // Verificar si el nombre de usuario ya existe
+        const [existingUser] = await pool.query('SELECT * FROM users WHERE BINARY username = ?', [username]);
+        if (existingUser.length > 0) {
+            return res.status(400).json({ success: false, message: 'El nombre de usuario ya está en uso.' });
+        }
+
         // Hashear la contraseña
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
+        // Insertar el nuevo usuario
         await pool.query('INSERT INTO users (first_name, last_name, username, password, is_admin ) VALUES (?, ?, ?, ?, ? )', [
             first_name, last_name, username, hashedPassword, isAdmin
         ]);
 
-        console.log('Usuario agregado con éxito.');
         return res.json({ success: true, message: 'Usuario agregado con éxito.' });
     } catch (err) {
         console.error(err);
@@ -479,13 +507,18 @@ app.put('/users/:id', async (req, res) => {
     let { editPassword } = req.body;
     const editIsAdmin = Number(req.body.editIsAdmin) === 1 ? 1 : 0;
 
-
     try {
         // 1. Buscar el usuario actual en la base de datos
         const [[user]] = await pool.query('SELECT * FROM users WHERE id = ?', [id]);
 
         if (!user) {
             return res.status(404).json({ success: false, message: 'Usuario no encontrado.' });
+        }
+
+        // 2. Verificar si el nombre de usuario editado ya existe para otro usuario
+        const [existingUser] = await pool.query('SELECT * FROM users WHERE BINARY username = ? AND id != ?', [editUser, id]);
+        if (existingUser.length > 0) {
+            return res.status(400).json({ success: false, message: 'El nombre de usuario ya está en uso por otro usuario.' });
         }
 
         let hashedPassword = user.password; // Mantener la contraseña existente por defecto
@@ -521,12 +554,10 @@ app.delete('/users/:id', async (req, res) => {
 
         // 2. Si tiene preguntas relacionadas en la tabla questions, eliminar las preguntas
         await pool.query('DELETE FROM questions WHERE user_id = ?', [id]);
-        console.log(`Se eliminaron las preguntas relacionadas al usuario con ID: ${id}`);
 
 
         // 3. Eliminar el usuario de la base de datos
         await pool.query('DELETE FROM users WHERE id = ?', [id]);
-        console.log(`Usuario con ID: ${id} eliminado con éxito.`);
 
         return res.json({ success: true, message: 'Usuario y preguntas relacionadas eliminados con éxito.' });
     } catch (err) {

@@ -9,10 +9,17 @@
 <body>
     <header class="admin-header">
         <h2>Panel de Administración</h2>
-        <div>
-            <button class="home-button" id="homeButton">Inicio</button>
-            <button class="questions-button" id="questionsButton">Administrar preguntas</button>
-            <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        <div class="dropdown">
+            <button class="dropdown-toggle">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="menu-icon">
+                    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#" id="homeButton">Inicio</a></li>
+                <li><a href="#" id="questionsButton">Administrar preguntas</a></li>
+                <li><a href="#" id="logoutButton">Cerrar sesión</a></li>
+            </ul>
         </div>
     </header>
     
@@ -55,6 +62,10 @@
             </form>
         </section>
 
+        <section id="usersMessageBox" class="message-box hidden">
+            <span id="usersMessageText"></span>
+        </section>
+
         <section class="table-container">
             <h3>Lista de Usuarios</h3>
             <table>
@@ -88,9 +99,12 @@
         </section>
     </main>
     
-    <div id="editModal" class="modal hidden">
+    <div id="editModal" class="modal hidden edit-users">
         <div class="modal-content">
             <span class="close">&times;</span>
+            <section id="modalMessageBox" class="message-box hidden">
+                <span id="modalMessageText"></span>
+            </section>
             <h3>Editar Usuario</h3>
             <form id="editForm">
                 <input type="hidden" name="id" id="editId">
@@ -125,7 +139,7 @@
                 <button type="submit">Guardar Cambios</button>
             </form>
         </div>
-    </div>    
+    </div>
     
     <script src="/js/script.js"></script>
 </body>

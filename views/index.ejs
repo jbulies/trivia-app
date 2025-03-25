@@ -14,9 +14,20 @@
         <div class="title">
             <h2>Aplicación Web Interactiva de Trivia</h2>
         </div>
-        <div>
-            <button class="questions-button" id="questionsButton">Administrar preguntas</button>
-            <button class="logout-button" id="logoutButton">Cerrar sesión</button>
+        <div class="dropdown">
+            <button class="dropdown-toggle">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="menu-icon">
+                    <path fill-rule="evenodd" d="M3 6.75A.75.75 0 013.75 6h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 6.75zM3 12a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75A.75.75 0 013 12zm0 5.25a.75.75 0 01.75-.75h16.5a.75.75 0 010 1.5H3.75a.75.75 0 01-.75-.75z" clip-rule="evenodd" />
+                </svg>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#" onclick="showScore()">Marcador</a></li>
+                <li><a href="#" id="questionsButton">Administrar preguntas</a></li>
+                <% if (isAdmin) { %>
+                    <li><a href="#" id="usersButton">Administrar usuarios</a></li>
+                <% } %>
+                <li><a href="#" id="logoutButton">Cerrar sesión</a></li>
+            </ul>
         </div>
     </div>
     <div id="container" class="container">
@@ -27,10 +38,36 @@
             <div id="timer">Tiempo restante: <span id="timeLeft">60</span> segundos</div>
             <div id="options">
                 <button id="showAnswer">Ver Respuesta</button>
-                <button onclick="goBack()">Atrás</button>
+                <button onclick="goBack()">Volver</button>
+                <div id="answerOptions">
+                    <button id="correctAnswer">Respuesta correcta</button>
+                    <button id="wrongAnswer">Respuesta incorrecta</button>
+                </div>
             </div>
             <div id="answerText" style="display:none;"></div>
-            <audio id="timeUpSound" src="/sounds/bleep-03.mp3"></audio>
+            <audio id="timeUpSound" src="/sounds/bleep-03.mp3" preload="auto"></audio>
+        </div>
+        <div id="scorePage" class="score-page" style="display:none;">
+            <section class="table-container" id="scoreTable">
+                <h3>Tabla de posiciones</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th></th>
+                            <th>Equipo Amarillo</th>
+                            <th>Equipo Rojo</th>
+                            <th>Equipo Azul</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                        </tr>
+                    </tbody>
+                </table>
+                <div id="scoreOptions">
+                    <button onclick="goBack()">Volver</button>
+                </div>
+            </section>
         </div>
     </div>
     <div class="footer">

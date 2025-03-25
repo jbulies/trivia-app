@@ -7,18 +7,23 @@
     <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <div class="login-container">
-        <div class="login-box">
-            <h2>Trivia BMC</h2>
-            <form action="/login" method="POST">
-                <div class="form-group">
-                    <label for="username">Usuario:</label>
-                    <input type="username" id="username" name="username" required>
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
-                </div>
-                <button type="submit">Iniciar Sesión</button>
-            </form>
+    <div class="login-row">
+        <% if (error) { %>
+            <div class="error-message">Nombre de usuario o contraseña incorrectos</div>
+        <% } %>
+        <div class="login-container">
+            <div class="login-box">
+                <h2>Trivia BMC</h2>
+                <form action="/login" method="POST">
+                    <div class="form-group">
+                        <label for="username">Usuario:</label>
+                        <input type="username" id="username" name="username" required>
+                        <label for="password">Contraseña:</label>
+                        <input type="password" id="password" name="password" required>
+                    </div>
+                    <button type="submit">Iniciar Sesión</button>
+                </form>
+            </div>
         </div>
     </div>
 </body>

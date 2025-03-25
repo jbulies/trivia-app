@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aplicación Web Interactiva de Trivia</title>
     <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
 </head>
 <body>
     <div class="header">
@@ -40,8 +41,12 @@
                 <button id="showAnswer">Ver Respuesta</button>
                 <button onclick="goBack()">Volver</button>
                 <div id="answerOptions">
-                    <button id="correctAnswer">Respuesta correcta</button>
-                    <button id="wrongAnswer">Respuesta incorrecta</button>
+                    <button id="correctAnswer">
+                        <i class="fas fa-check" style="color: green;"></i> Respuesta correcta
+                    </button>
+                    <button id="wrongAnswer">
+                        <i class="fas fa-times" style="color: red;"></i> Respuesta incorrecta
+                    </button>
                 </div>
             </div>
             <div id="answerText" style="display:none;"></div>

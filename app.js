@@ -51,7 +51,7 @@ app.use(session({
     cookie: {
         maxAge: 1000 * 60 * 60 * 24, // 1 día de duración
         httpOnly: true, // Mayor seguridad
-        secure: process.env.SESSION_SECURE === 'true' // Cambiar a `true` si usas HTTPS
+        secure: false // Cambiar a true si usas HTTPS
     }
 }));
 

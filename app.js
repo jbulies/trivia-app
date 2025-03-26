@@ -13,9 +13,6 @@ const fs = require('fs');
 
 const port = process.env.PORT || 3000;
 
-// Crear una instancia de MySQLSessionStore
-const sessionStore = new MySQLSessionStore({}, pool);
-
 // Middleware
 app.use('/tinymce', express.static(__dirname + '/node_modules/tinymce'));
 app.use(express.urlencoded({ extended: false }));
@@ -25,17 +22,24 @@ app.set('view engine', 'ejs');
 
 // Multer para subir archivos
 const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, 'assets/img');
-  },
-  filename: function (req, file, cb) {
-    cb(null, Date.now() + path.extname(file.originalname));
-  },
+    destination: function (req, file, cb) {
+        cb(null, 'assets/img');
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname));
+    },
 });
 const upload = multer({ storage: storage });
 
 // Nueva instancia de multer para parsear formularios sin archivos en /users
 const uploadUsers = multer();
+
+// Configurar el almacenamiento de sesiones en MySQL
+const sessionStore = new MySQLSessionStore({
+    clearExpired: true,  // Limpia sesiones expiradas automáticamente
+    checkExpirationInterval: 900000, // Verifica cada 15 min
+    expiration: 86400000, // Expiración de sesiones: 1 día
+}, pool);
 
 // Configurar express-session para usar MySQLSessionStore
 app.use(session({
@@ -45,19 +49,21 @@ app.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-      maxAge: 1000 * 60 * 60 * 24, // 1 día de duración
-      httpOnly: true, // Mayor seguridad
-      secure: false // Cambiar a `true` si usas HTTPS
+        maxAge: 1000 * 60 * 60 * 24, // 1 día de duración
+        httpOnly: true, // Mayor seguridad
+        secure: process.env.SESSION_SECURE === 'true' // Cambiar a `true` si usas HTTPS
     }
-  }));
+}));
 
 // Middleware para verificar autenticación
 const isAuthenticated = (req, res, next) => {
-  if (req.session && req.session.authenticated) {
-    return next();
-  } else {
-    return res.redirect('/login');
-  }
+    if (req.session && req.session.authenticated) {
+        return next();
+    } else {
+        req.session.destroy(() => {
+            res.redirect('/login');
+        });
+    }
 };
 
 // Rutas
@@ -117,6 +123,9 @@ app.get('/question/:number', isAuthenticated, async (req, res) => {
 
 // Página de inicio de sesión administrador
 app.get('/login', (req, res) => {
+    if (req.session.authenticated) {
+        return res.redirect('/'); // Evita que usuarios autenticados vean el login
+    }
     const error = req.query.error; // Capturamos el query param error si viene
     res.render('login', { error }); // Se lo pasamos como variable a la vista
 });
@@ -138,11 +147,18 @@ app.post('/login', async (req, res) => {
         const isPasswordValid = await bcrypt.compare(password, user[0].password); // Verificar el hash de la contraseña
 
         if (isPasswordValid) {
-            // Si la contraseña es válida, iniciar sesión
-            req.session.authenticated = true;
-            req.session.username = username; // Guardar el nombre de usuario en la sesión
-            req.session.user_id = user[0].id; // Guardar el ID del usuario en la sesión
-            return res.redirect('/');
+            // Regenerar la sesión para evitar conflictos con sesiones antiguas
+            req.session.regenerate((err) => {
+                if (err) {
+                    console.error('Error al regenerar sesión:', err);
+                    return res.redirect('/login?error=true');
+                }
+                // Si la contraseña es válida, iniciar sesión
+                req.session.authenticated = true;
+                req.session.username = username; // Guardar el nombre de usuario en la sesión
+                req.session.user_id = user[0].id; // Guardar el ID del usuario en la sesión
+                return res.redirect('/');
+            });
         } else {
             // Si la contraseña no es válida, redirigir al login
             return res.redirect('/login?error=true');
@@ -155,8 +171,9 @@ app.post('/login', async (req, res) => {
 
 // Cierre de sesión administrador
 app.post('/logout', (req, res) => {
-    req.session.authenticated = false;
-    res.status(200).send();
+    req.session.destroy(() => {
+        res.redirect('/login');
+    });
 });
 
 // Panel de administrador

@@ -126,6 +126,10 @@ body {
     color: #333333;
 }
 
+.question-page #answerOptions {
+    margin-bottom: 10px;
+}
+
 .question-page #correctAnswer:hover {
     background-color: #d4edda;
     border: 1px solid #d4edda;

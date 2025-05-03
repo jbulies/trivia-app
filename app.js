@@ -171,7 +171,12 @@ app.post('/login', async (req, res) => {
 
 // Cierre de sesión administrador
 app.post('/logout', (req, res) => {
-    req.session.destroy(() => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).json({ success: false, message: 'Error al cerrar sesión.' });
+        }
+        // Limpiar la cookie de sesión explícitamente (opcional, pero buena práctica)
+        res.clearCookie('trivia_app');
         res.redirect('/login');
     });
 });

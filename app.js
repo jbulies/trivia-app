@@ -90,11 +90,95 @@ app.get('/questions', isAuthenticated, async (req, res) => {
     const userId = req.session.user_id;
     try {
         const [results] = await pool.query('SELECT * FROM questions WHERE user_id = ? ORDER BY number', [userId]);
-        res.json(results);
+        const answeredQuestionIds = new Set(req.session.answeredQuestionIds || []);
+        res.json(results.map(question => ({
+            ...question,
+            answered: answeredQuestionIds.has(question.id)
+        })));
     } catch (err) {
         console.error(err);
         res.status(500).json({ success: false, message: 'Error interno del servidor.' });
     }
+});
+
+// Obtener las puntuaciones de las rondas guardadas en la sesión actual
+app.get('/scoreboard', isAuthenticated, (req, res) => {
+    res.json(req.session.scoresByRound || []);
+});
+
+// Guardar una ronda completada en la sesión actual
+app.post('/scoreboard', isAuthenticated, (req, res) => {
+    const { round } = req.body;
+    const teams = ['amarillo', 'rojo', 'azul'];
+
+    if (!round || typeof round !== 'object' || Array.isArray(round) ||
+        teams.some(team => !Number.isInteger(round[team]) || round[team] < 0)) {
+        return res.status(400).json({ success: false, message: 'Puntuación de ronda no válida.' });
+    }
+
+    const scoresByRound = req.session.scoresByRound || [];
+    scoresByRound.push({
+        amarillo: round.amarillo,
+        rojo: round.rojo,
+        azul: round.azul
+    });
+    req.session.scoresByRound = scoresByRound;
+
+    req.session.save(err => {
+        if (err) {
+            console.error('Error al guardar la puntuación de la ronda:', err);
+            return res.status(500).json({ success: false, message: 'No se pudo guardar la puntuación de la ronda.' });
+        }
+        res.json({ success: true, scoresByRound });
+    });
+});
+
+// Marcar una pregunta como abierta en la sesión actual
+app.post('/answered-questions', isAuthenticated, async (req, res) => {
+    const questionId = Number(req.body.questionId);
+
+    if (!Number.isInteger(questionId) || questionId < 1) {
+        return res.status(400).json({ success: false, message: 'Identificador de pregunta no válido.' });
+    }
+
+    try {
+        const [questions] = await pool.query(
+            'SELECT id FROM questions WHERE id = ? AND user_id = ?',
+            [questionId, req.session.user_id]
+        );
+
+        if (questions.length === 0) {
+            return res.status(404).json({ success: false, message: 'Pregunta no encontrada.' });
+        }
+
+        const answeredQuestionIds = new Set(req.session.answeredQuestionIds || []);
+        answeredQuestionIds.add(questionId);
+        req.session.answeredQuestionIds = [...answeredQuestionIds];
+
+        req.session.save(err => {
+            if (err) {
+                console.error('Error al guardar el estado de la pregunta:', err);
+                return res.status(500).json({ success: false, message: 'No se pudo guardar el estado de la pregunta.' });
+            }
+            res.json({ success: true });
+        });
+    } catch (err) {
+        console.error('Error al marcar la pregunta como abierta:', err);
+        res.status(500).json({ success: false, message: 'Error interno del servidor.' });
+    }
+});
+
+// Reiniciar los estados de preguntas abiertas en la sesión actual
+app.post('/reset-game', isAuthenticated, (req, res) => {
+    req.session.answeredQuestionIds = [];
+    req.session.scoresByRound = [];
+    req.session.save(err => {
+        if (err) {
+            console.error('Error al reiniciar el estado de la partida:', err);
+            return res.status(500).json({ success: false, message: 'No se pudo reiniciar la partida.' });
+        }
+        res.json({ success: true });
+    });
 });
 
 // Obtener una pregunta por Number

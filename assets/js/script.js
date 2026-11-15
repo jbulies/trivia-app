@@ -15,6 +15,7 @@ const timeLeftElement = document.getElementById('timeLeft');
 const timerElement = document.getElementById('timer');
 let timerInterval;
 let selectedButton;
+let selectedQuestionId;
 
 dropdownToggle.addEventListener('click', (event) => {
     event.stopPropagation();
@@ -61,9 +62,22 @@ if (mainDiv && questionPage) {
     }
 
     function createButtons() {
-        fetch('/questions') // Trae las preguntas del usuario actual
-            .then(response => response.json())
-            .then(data => {
+        Promise.all([fetch('/questions'), fetch('/scoreboard')])
+            .then(async ([questionsResponse, scoresResponse]) => {
+                if (!questionsResponse.ok || !scoresResponse.ok) {
+                    throw new Error('No se pudieron cargar los datos de la partida.');
+                }
+
+                const [data, savedScores] = await Promise.all([
+                    questionsResponse.json(),
+                    scoresResponse.json()
+                ]);
+                if (!Array.isArray(savedScores)) {
+                    throw new Error('El marcador guardado no tiene un formato válido.');
+                }
+
+                scoresByRound.push(...savedScores);
+                updateScoreTable();
                 questionsList = data; // Guardamos el listado completo de preguntas
 
                 data.forEach((question, index) => {
@@ -73,7 +87,9 @@ if (mainDiv && questionPage) {
                     // Mostramos un número consecutivo aunque los números reales no lo sean
                     button.innerText = index + 1;
 
-                    button.style.backgroundColor = getColorByGroup(question.group_id);
+                    button.style.backgroundColor = question.answered
+                        ? '#4CAF50'
+                        : getColorByGroup(question.group_id);
 
                     // Al hacer clic, obtenemos el question.number real a partir de su posición en questionsList
                     button.onclick = () => showQuestionByNumber(question.number);
@@ -94,7 +110,7 @@ if (mainDiv && questionPage) {
             })
             .then(data => {
                 // Ahora no usamos el texto del botón para buscarlo, sino su posición en questionsList
-                const buttonIndex = questionsList.findIndex(q => q.number === data.number);
+                const buttonIndex = questionsList.findIndex(q => q.id === data.id);
 
                 if (buttonIndex === -1) {
                     console.error(`Pregunta con número ${data.number} no encontrada en la lista de botones.`);
@@ -110,6 +126,7 @@ if (mainDiv && questionPage) {
                 }
 
                 selectedButton = selectedChild;
+                selectedQuestionId = data.id;
 
                 switch (data.group_id) {
                     case 1:
@@ -182,29 +199,40 @@ if (mainDiv && questionPage) {
     let currentTeam = null; // El equipo actual
 
     // Botón para respuesta correcta
-    correctAnswerBtn.addEventListener('click', () => {
-        if (currentTeam) {
-            currentRound[currentTeam] += 1;
-            answersThisRound[currentTeam] += 1;
-            teamsAnsweredThisRound.add(currentTeam);
-            checkRoundEnd();
-            goBack();
-        }
-    });
+    correctAnswerBtn.addEventListener('click', () => recordAnswer(true));
 
     // Botón para respuesta incorrecta
-    wrongAnswerBtn.addEventListener('click', () => {
-        if (currentTeam) {
-            currentRound[currentTeam] += 0;
-            answersThisRound[currentTeam] += 1;
-            teamsAnsweredThisRound.add(currentTeam);
-            checkRoundEnd();
-            goBack();
+    wrongAnswerBtn.addEventListener('click', () => recordAnswer(false));
+
+    async function recordAnswer(isCorrect) {
+        if (!currentTeam) {
+            return;
         }
-    });
+
+        const team = currentTeam;
+        const hadAnsweredThisRound = teamsAnsweredThisRound.has(team);
+        currentRound[team] += isCorrect ? 1 : 0;
+        answersThisRound[team] += 1;
+        teamsAnsweredThisRound.add(team);
+
+        try {
+            await checkRoundEnd();
+        } catch (error) {
+            currentRound[team] -= isCorrect ? 1 : 0;
+            answersThisRound[team] -= 1;
+            if (!hadAnsweredThisRound) {
+                teamsAnsweredThisRound.delete(team);
+            }
+            console.error('Error al guardar el marcador:', error);
+            alert(error.message || 'No se pudo guardar el marcador.');
+            return;
+        }
+
+        await goBack();
+    }
 
     // Chequea si los tres equipos respondieron y todos respondieron la misma cantidad (la máxima alcanzada)
-    function checkRoundEnd() {
+    async function checkRoundEnd() {
         if (teamsAnsweredThisRound.size === 3) {
             const maxAnswers = Math.max(
                 answersThisRound.amarillo,
@@ -215,14 +243,24 @@ if (mainDiv && questionPage) {
             if (answersThisRound.amarillo === maxAnswers &&
                 answersThisRound.rojo === maxAnswers &&
                 answersThisRound.azul === maxAnswers) {
-                endRound();
+                await endRound();
             }
         }
     }
 
-    function endRound() {
-        // Guarda una copia del resultado de la ronda
-        scoresByRound.push({ ...currentRound });
+    async function endRound() {
+        const response = await fetch('/scoreboard', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ round: currentRound })
+        });
+        const result = await response.json();
+
+        if (!response.ok || !result.success || !Array.isArray(result.scoresByRound)) {
+            throw new Error(result.message || 'No se pudo guardar la puntuación de la ronda.');
+        }
+
+        scoresByRound.splice(0, scoresByRound.length, ...result.scoresByRound);
 
         // Resetea para la siguiente ronda
         currentRound = { amarillo: 0, rojo: 0, azul: 0 };
@@ -282,16 +320,35 @@ if (mainDiv && questionPage) {
         showAnswerButton.disabled = true;
     }
 
-    function goBack() {
+    async function goBack() {
+        if (selectedQuestionId) {
+            try {
+                const response = await fetch('/answered-questions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ questionId: selectedQuestionId })
+                });
+                const result = await response.json();
+
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'No se pudo guardar el estado de la pregunta.');
+                }
+
+                if (selectedButton) {
+                    selectedButton.style.backgroundColor = '#4CAF50';
+                }
+                selectedQuestionId = null;
+            } catch (error) {
+                console.error('Error al guardar el estado de la pregunta:', error);
+                alert(error.message || 'No se pudo guardar el estado de la pregunta.');
+                return;
+            }
+        }
+
         clearInterval(timerInterval);
         questionPage.style.display = 'none';
         scorePage.style.display = 'none';
         mainDiv.style.display = 'grid';
-
-        if (selectedButton) {
-            // Cambiar el color del botón seleccionado a verde
-            selectedButton.style.backgroundColor = '#4CAF50';
-        }
     }
 
     createButtons();
@@ -305,6 +362,42 @@ if (mainDiv && questionPage) {
     } 
 
     window.goBack = goBack;
+
+    const resetGameButton = document.getElementById('resetGameButton');
+    if (resetGameButton) {
+        resetGameButton.addEventListener('click', async event => {
+            event.preventDefault();
+            if (!window.confirm('¿Reiniciar la partida y borrar las preguntas respondidas?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch('/reset-game', { method: 'POST' });
+                const result = await response.json();
+                if (!response.ok || !result.success) {
+                    throw new Error(result.message || 'No se pudo reiniciar la partida.');
+                }
+
+                questionsList.forEach((question, index) => {
+                    mainDiv.children[index].style.backgroundColor = getColorByGroup(question.group_id);
+                });
+                scoresByRound.length = 0;
+                currentRound = { amarillo: 0, rojo: 0, azul: 0 };
+                answersThisRound = { amarillo: 0, rojo: 0, azul: 0 };
+                teamsAnsweredThisRound.clear();
+                selectedQuestionId = null;
+                selectedButton = null;
+                clearInterval(timerInterval);
+                questionPage.style.display = 'none';
+                scorePage.style.display = 'none';
+                mainDiv.style.display = 'grid';
+                updateScoreTable();
+            } catch (error) {
+                console.error('Error al reiniciar la partida:', error);
+                alert(error.message || 'No se pudo reiniciar la partida.');
+            }
+        });
+    }
 }
 
 const messageBox = document.getElementById('messageBox');

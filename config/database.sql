@@ -1,8 +1,8 @@
 -- Crear la base de datos si no existe 
-CREATE DATABASE IF NOT EXISTS trivia_app;
+CREATE DATABASE IF NOT EXISTS trivia_db;
 
 -- Usar la base de datos recién creada
-USE trivia_app;
+USE trivia_db;
 
 -- Crear la tabla users si no existe (con cambios si es necesario)
 CREATE TABLE IF NOT EXISTS users (

@@ -38,7 +38,8 @@ Esta es una aplicación web interactiva de trivia diseñada para su uso en el au
 - **Mejoras en la Interfaz**: Diversos ajustes de diseño para una mejor experiencia de usuario.
 
 ## Consideraciones
-- **El flujo del juego funciona mientras no se recargue la página**. Si la página se recarga, el marcador y las preguntas respondidas se restablecen.
+- **Las preguntas abiertas y el marcador por rondas se guardan en la sesión actual** y se restauran al recargar la página. La opción **Reiniciar**, disponible en el menú superior, borra esos estados y reinicia el marcador de la partida.
+- **Al cerrar sesión o expirar la sesión, el marcador vuelve a cero**; se puede reiniciar manualmente desde el menú.
 
 ## Uso
 1. **Iniciar Sesión** con credenciales de usuario.

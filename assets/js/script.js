@@ -277,10 +277,10 @@ if (mainDiv && questionPage) {
         scoresByRound.forEach((round, index) => {
             const row = document.createElement('tr');
             row.innerHTML = `
-                <td>Ronda ${index + 1}</td>
-                <td>${round.amarillo}</td>
-                <td>${round.rojo}</td>
-                <td>${round.azul}</td>
+                <td class="score-card-title">Ronda ${index + 1}</td>
+                <td data-label="Equipo Amarillo">${round.amarillo}</td>
+                <td data-label="Equipo Rojo">${round.rojo}</td>
+                <td data-label="Equipo Azul">${round.azul}</td>
             `;
             tableBody.appendChild(row);
         });
@@ -298,10 +298,10 @@ if (mainDiv && questionPage) {
 
         const totalRow = document.createElement('tr');
         totalRow.innerHTML = `
-            <td><strong>Total</strong></td>
-            <td><strong>${total.amarillo}</strong></td>
-            <td><strong>${total.rojo}</strong></td>
-            <td><strong>${total.azul}</strong></td>
+            <td class="score-card-title"><strong>Total</strong></td>
+            <td data-label="Equipo Amarillo"><strong>${total.amarillo}</strong></td>
+            <td data-label="Equipo Rojo"><strong>${total.rojo}</strong></td>
+            <td data-label="Equipo Azul"><strong>${total.azul}</strong></td>
         `;
         tableBody.appendChild(totalRow);
     }

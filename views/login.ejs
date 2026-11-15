@@ -14,18 +14,31 @@
         <% } %>
         <div class="login-container">
             <div class="login-box">
-                <h2>Trivia BMC</h2>
+                <div class="login-header">
+                    <img src="/img/logo_trivia.png" alt="Logo-Trivia" class="login-logo-inline">
+                    <h2>Trivia BMC</h2>
+                </div>
                 <form action="/login" method="POST">
                     <div class="form-group">
                         <label for="username">Usuario:</label>
                         <input type="username" id="username" name="username" required>
                         <label for="password">Contraseña:</label>
-                        <input type="password" id="password" name="password" required>
+                        <div class="password-field">
+                            <input type="password" id="password" name="password" required>
+                            <button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña" aria-pressed="false" aria-controls="password" title="Mostrar contraseña">
+                                <svg class="password-toggle__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                    <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                    <path class="password-toggle__slash" d="m3 3 18 18"></path>
+                                </svg>
+                            </button>
+                        </div>
                     </div>
                     <button type="submit">Iniciar Sesión</button>
                 </form>
             </div>
         </div>
     </div>
+    <script src="/js/password-toggle.js"></script>
 </body>
 </html>

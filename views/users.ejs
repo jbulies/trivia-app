@@ -49,7 +49,16 @@
                 
                 <div class="form-group">
                     <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
+                    <div class="password-field">
+                        <input type="password" id="password" name="password" required>
+                        <button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña" aria-pressed="false" aria-controls="password" title="Mostrar contraseña">
+                            <svg class="password-toggle__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path class="password-toggle__slash" d="m3 3 18 18"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div class="form-group">
@@ -83,12 +92,12 @@
                 <tbody>
                     <% users.forEach(user => { %>
                     <tr>
-                        <td><%= user.id %></td>
-                        <td><%= user.username %></td>
-                        <td><%= user.first_name %></td>
-                        <td><%= user.last_name %></td>
-                        <td><%= user.is_admin === 1 ? 'Sí' : 'No' %></td>
-                        <td>
+                        <td data-label="Id"><%= user.id %></td>
+                        <td data-label="Usuario"><%= user.username %></td>
+                        <td data-label="Nombre"><%= user.first_name %></td>
+                        <td data-label="Apellidos"><%= user.last_name %></td>
+                        <td data-label="Admin"><%= user.is_admin === 1 ? 'Sí' : 'No' %></td>
+                        <td data-label="Acciones">
                             <button class="edit-button" data-id="<%= user.id %>">Editar</button>
                             <button class="delete-button" data-id="<%= user.id %>">Eliminar</button>
                         </td>
@@ -127,7 +136,16 @@
                 
                 <div class="form-group">
                     <label for="editPassword">Contraseña</label>
-                    <input type="password" id="editPassword" name="editPassword" required>
+                    <div class="password-field">
+                        <input type="password" id="editPassword" name="editPassword" required>
+                        <button class="password-toggle" type="button" data-password-toggle aria-label="Mostrar contraseña" aria-pressed="false" aria-controls="editPassword" title="Mostrar contraseña">
+                            <svg class="password-toggle__icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+                                <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path class="password-toggle__slash" d="m3 3 18 18"></path>
+                            </svg>
+                        </button>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -143,5 +161,6 @@
     </div>
     
     <script src="/js/script.js"></script>
+    <script src="/js/password-toggle.js"></script>
 </body>
 </html>

@@ -102,18 +102,18 @@
                 <tbody>
                     <% questions.forEach(question => { %>
                     <tr>
-                        <td><%= question.number %></td>
-                        <td><%- question.question %></td>
-                        <td><%- question.answer %></td>
-                        <td>
+                        <td data-label="Número"><%= question.number %></td>
+                        <td data-label="Pregunta"><%- question.question %></td>
+                        <td data-label="Respuesta"><%- question.answer %></td>
+                        <td data-label="Imagen">
                             <% if (question.image) { %>
                                 <img src="/img/<%= question.image %>" alt="Imagen de la pregunta" height="50">
                             <% } else { %>
                                 No Imagen
                             <% } %>
                         </td>
-                        <td><%= question.group_id %></td>
-                        <td>
+                        <td data-label="Grupo"><%= question.group_id %></td>
+                        <td data-label="Acciones">
                             <button class="edit-button" data-id="<%= question.id %>">Editar</button>
                             <button class="delete-button" data-id="<%= question.id %>">Eliminar</button>
                         </td>

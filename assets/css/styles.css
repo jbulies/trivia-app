@@ -13,7 +13,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px;
+    padding: 10px 20px 20px 20px;
     position: relative;
 }
 
@@ -149,28 +149,75 @@ body {
 
 /* Pie de página */
 .footer {
-    padding: 10px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) minmax(0, 1fr);
+    align-items: end;
+    padding: 20px;
+}
+
+.footer-left {
+    white-space: nowrap;
+}
+
+.footer-center {
+    min-width: 0;
     text-align: center;
 }
 
-.footer p {
-    margin: 3px 3px;
+.footer-center p {
+    margin: 0;
+}
+
+.footer-center p + p {
+    margin-top: 6px;
+}
+
+@media (max-width: 1024px) {
+    .footer {
+        grid-template-columns: 1fr;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+    }
+
+    .footer-left,
+    .footer-center {
+        text-align: center;
+    }
+
+    .footer-right {
+        display: none;
+    }
 }
 
 /* Contenedor del login */
 .login-container {
     background-color: #f0f0f0;
+    padding: 0 12px;
 }
 
 /* Caja del formulario */
 .login-box {
     background-color: white;
-    padding: 25px 25px 60px;
+    padding: 25px 25px 50px;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    width: 100%;
     max-width: 350px;
     text-align: center;
+}
+
+.login-header {
+    display: flex;
+    align-items: center;       /* Centra verticalmente la imagen y el texto */
+    justify-content: center;   /* Centra todo el conjunto horizontalmente en la caja */
+    gap: 12px;                 /* Espacio de separación entre el logo y el título */
+    margin-bottom: 24px;       /* Espacio debajo del encabezado hacia el formulario */
+}
+
+.login-logo-inline {
+    height: 40px;              /* Altura fija aproximada de 40px */
+    width: auto;               /* Mantiene la proporción original para que no se deforme */
+    object-fit: contain;
 }
 
 .login-box h2 {
@@ -192,7 +239,7 @@ body {
 
 .form-group input {
     width: 100%;
-    padding: 10px;
+    padding: 8px;
     border: 1px solid #ccc;
     border-radius: 5px;
     box-sizing: border-box;
@@ -225,7 +272,7 @@ body {
 }
 
 .login-row .error-message {
-    padding: 10px;
+    padding: 20px;
     background-color: #f8d7da;
     color: #721c24;
     border-radius: 5px;
@@ -235,39 +282,23 @@ body {
     box-sizing: border-box; /* Incluye el padding en el ancho */
 }
 
-/* Responsividad */
-@media (max-width: 480px) {
-    .login-box {
-        padding: 20px;
-    }
-    
-    .login-box h2 {
-        font-size: 1.2rem;
-    }
-    
-    .form-group input {
-        padding: 8px;
-    }
-    
-    .login-box button {
-        padding: 10px;
-    }
-}
-
 /***********/
 .admin-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    box-sizing: border-box;
     max-width: 1200px;
     width: 100%;
-    padding: 10px 20px;
+    padding: 10px 20px 20px 20px;
     margin: 0 auto;
 }
 
 .admin-container {
     max-width: 1200px;
+    width: 100%;
     margin: 0px auto;
+    padding: 0 12px;
 }
 
 .dropdown {
@@ -325,7 +356,7 @@ body {
 
 .message-box {
     display: none;
-    padding: 10px;
+    padding: 20px;
     background-color: #dff0d8;
     border: 1px solid #b2dba1;
     margin-bottom: 15px;
@@ -356,6 +387,7 @@ body {
 #addQuestionForm .form-group textarea {
     width: 98%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 1142.4px;
@@ -365,6 +397,7 @@ body {
 #addQuestionForm .form-group input {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 350px;
@@ -381,6 +414,7 @@ body {
 #addUserSection .form-group input {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 350px;
@@ -394,6 +428,7 @@ body {
 #addQuestionForm .form-group select {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 160px;
@@ -446,7 +481,7 @@ table {
 }
 
 th, td {
-    padding: 10px;
+    padding: 20px;
     text-align: left;
     border-bottom: 1px solid #ddd;
 }
@@ -505,6 +540,7 @@ tr:hover {
 #editModal .form-group textarea {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 582.4px;
@@ -514,6 +550,7 @@ tr:hover {
 #editModal .form-group input {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 350px;
@@ -526,6 +563,7 @@ tr:hover {
 #editModal .form-group select {
     width: 100%;
     padding: 8px;
+    box-sizing: border-box;
     border: 1px solid #ccc;
     border-radius: 5px;
     max-width: 160px;
@@ -561,6 +599,83 @@ tr:hover {
     color: red;
 }
 
+.password-field {
+    position: relative;
+    width: 100%;
+}
+
+.login-box .password-field > input,
+#addUserSection .password-field > input,
+#editModal .password-field > input {
+    display: block;
+    padding-right: 44px;
+}
+
+#addUserSection .password-field {
+    max-width: 350px;
+}
+
+.password-toggle {
+    position: absolute;
+    top: 50%;
+    right: 6px;
+    display: flex;
+    width: 32px;
+    height: 32px;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transform: translateY(-50%);
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: #555;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.password-toggle:hover {
+    background-color: unset;
+    color: #222;
+}
+
+.password-toggle:focus-visible {
+    outline: 2px solid #007BFF;
+    outline-offset: 1px;
+}
+
+.login-box .password-toggle {
+    width: 32px;
+    padding: 0;
+    border-radius: 4px;
+    background-color: transparent;
+    color: #555;
+}
+
+.login-box .password-toggle:hover {
+    background-color: unset;
+    color: #222;
+}
+
+.password-toggle__icon {
+    display: block;
+    width: 20px;
+    height: 20px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.password-toggle__slash {
+    display: none;
+}
+
+.password-toggle[aria-pressed="true"] .password-toggle__slash {
+    display: block;
+}
+
 /* Estilos responsivos */
 @media (max-width: 768px) {
     .logo img {
@@ -584,6 +699,187 @@ tr:hover {
         grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
         gap: 10px;
     }
+
+    .admin-header {
+        width: 100%;
+        padding: 10px 16px;
+        gap: 12px;
+    }
+
+    .admin-header h2 {
+        min-width: 0;
+        font-size: 1.15rem;
+    }
+
+    .admin-container {
+        box-sizing: border-box;
+        width: 100%;
+        padding: 0 12px;
+    }
+
+    #addQuestionForm,
+    #addUserSection,
+    .admin-actions,
+    .table-container {
+        box-sizing: border-box;
+        padding: 16px;
+    }
+
+    #addQuestionForm .form-group textarea,
+    #addQuestionForm .form-group input,
+    #addQuestionForm .form-group select,
+    #addUserSection .form-group input,
+    #editModal .form-group textarea,
+    #editModal .form-group input,
+    #editModal .form-group select {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 100%;
+    }
+
+    #addUserSection .form-group #isAdmin,
+    #editModal .form-group #editIsAdmin {
+        width: unset;
+    }
+
+    .table-container > table {
+        display: block;
+        width: 100%;
+        margin-top: 12px;
+    }
+
+    .table-container > table thead {
+        display: none;
+    }
+
+    .table-container > table tbody {
+        display: grid;
+        gap: 12px;
+    }
+
+    .table-container > table tbody tr {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        min-width: 0;
+        overflow: hidden;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: white;
+    }
+
+    .admin-container .table-container > table tbody td {
+        display: grid;
+        grid-template-columns: minmax(6rem, 30%) minmax(0, 1fr);
+        gap: 8px;
+        min-width: 0;
+        padding: 10px;
+        overflow-wrap: anywhere;
+    }
+
+    .admin-container .table-container > table tbody td::before {
+        content: attr(data-label);
+        font-weight: bold;
+    }
+
+    .admin-container .table-container > table tbody td:last-child {
+        min-width: 0;
+        border-bottom: 0;
+    }
+
+    .admin-container .table-container > table td[data-label="Acciones"] {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .admin-container .table-container > table td[data-label="Acciones"]::before {
+        flex-basis: 100%;
+    }
+
+    .admin-container .table-container > table td[data-label="Acciones"] button {
+        margin: 0;
+    }
+
+    .admin-container .table-container img {
+        max-width: 100%;
+        height: auto;
+        object-fit: contain;
+    }
+
+    #scorePage {
+        box-sizing: border-box;
+        width: 100%;
+        min-width: 0;
+    }
+
+    #scorePage tr td {
+        min-width: 0;
+    }
+
+    #scorePage .table-container > table tbody tr {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    #scorePage .table-container > table tbody td {
+        display: flex;
+        min-width: 0;
+        flex-direction: column;
+        gap: 4px;
+        padding: 10px 6px;
+        overflow-wrap: anywhere;
+        text-align: center;
+    }
+
+    #scorePage .table-container > table tbody td::before {
+        content: attr(data-label);
+        font-size: 0.75rem;
+        font-weight: bold;
+    }
+
+    #scorePage .table-container > table tbody td.score-card-title {
+        grid-column: 1 / -1;
+        align-items: flex-start;
+        padding: 10px;
+        background-color: #f2f2f2;
+        text-align: left;
+    }
+
+    #scorePage .table-container > table tbody td.score-card-title::before {
+        content: none;
+    }
+
+    #editModal {
+        box-sizing: border-box;
+        padding: 12px;
+    }
+
+    #editModal .modal-content {
+        box-sizing: border-box;
+        width: 100%;
+        max-width: 600px;
+        max-height: 92vh;
+        margin: 4vh auto;
+        padding: 16px;
+        overflow-y: auto;
+    }
+
+    #editModal .form-group {
+        min-width: 0;
+    }
+
+    .tox-tinymce {
+        max-width: 100%;
+    }
+
+    .edit-question-form .form-group:nth-child(4) {
+        flex-wrap: wrap;
+    }
+
+    .edit-question-form .form-group:nth-child(4) img {
+        max-width: 100%;
+        height: auto;
+    }
 }
 
 @media (max-width: 480px) {
@@ -595,7 +891,7 @@ tr:hover {
         padding: 15px;
     }
 
-    .footer p {
+    .footer {
         font-size: 0.9rem;
     }
 }

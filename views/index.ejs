@@ -40,16 +40,16 @@
             <div id="questionText"></div>
             <div id="timer">Tiempo restante: <span id="timeLeft">60</span> segundos</div>
             <div id="options">
-                <button id="showAnswer">Ver Respuesta</button>
-                <button onclick="goBack()">Volver</button>
                 <div id="answerOptions">
                     <button id="correctAnswer">
-                        <i class="fas fa-check" style="color: green;"></i> Respuesta correcta
+                        <i class="fas fa-check" style="color: green;"></i> Correcto
                     </button>
                     <button id="wrongAnswer">
-                        <i class="fas fa-times" style="color: red;"></i> Respuesta incorrecta
+                        <i class="fas fa-times" style="color: red;"></i> Incorrecto
                     </button>
                 </div>
+                <button id="showAnswer">Respuesta</button>
+                <button id="goBack" onclick="goBack()">Volver</button>
             </div>
             <div id="answerText" style="display:none;"></div>
             <audio id="timeUpSound" src="/sounds/bleep-03.mp3" preload="auto"></audio>
@@ -72,7 +72,7 @@
                     </tbody>
                 </table>
                 <div id="scoreOptions">
-                    <button onclick="goBack()">Volver</button>
+                    <button id="goBack" onclick="goBack()">Volver</button>
                 </div>
             </section>
         </div>
